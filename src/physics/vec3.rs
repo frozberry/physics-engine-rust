@@ -2,7 +2,7 @@ use std::ops;
 
 #[derive(PartialEq, Debug)]
 
-struct Vec3 {
+pub struct Vec3 {
     x: f32,
     y: f32,
     z: f32,

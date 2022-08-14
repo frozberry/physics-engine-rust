@@ -1,12 +1,16 @@
-mod vec2;
-mod vec3;
+mod application;
+mod graphics;
+mod physics;
 
-use vec2::Vec2;
+use application::Application;
 
 fn main() {
-    let mut v = Vec2::new(0., 0.);
-    let mut unit = Vec2::new(1., 1.);
-    unit /= 2.;
+    let app = Application::new();
+    while app.is_running() {
+        app.input();
+        app.update();
+        app.render();
+    }
 
-    println!("v: {:?}", unit);
+    app.destroy();
 }
