@@ -6,7 +6,8 @@ mod physics;
 use application::Application;
 
 fn main() {
-    // let app = Application::new();
+    let mut app = Application::new();
+    app.setup();
     // while app.is_running() {
     //     app.input();
     //     app.update();

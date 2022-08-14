@@ -7,8 +7,8 @@ edition = "2021"
 
 [dependencies]
 assert_approx_eq = "1.1.0"
-sdl2 = "0.35.2"
 
-
-
-
+[dependencies.sdl2]
+version = "0.35.2"
+default-features = false
+features = ["gfx"]
