@@ -60,7 +60,11 @@ pub fn open_window() -> bool {
             0,
             0,
             WINDOW_WIDTH,
-            SDL_WindowFlags::SDL_WINDOW_BORDERLESS as Uint32,
+            // C++ code uses SDL_WINDOW_BORDERLESS, which works fine on my machine.
+            // For some reason, that doesn't work on my machine when using Rust.
+            // I need to use the FULLSCREEN flag to get the screen to show properly.
+            // Possibly because I'm running WSL2?
+            SDL_WindowFlags::SDL_WINDOW_FULLSCREEN as Uint32,
         );
 
         if WINDOW.is_null() {
