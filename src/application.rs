@@ -2,15 +2,21 @@ use std::mem::MaybeUninit;
 
 use sdl2::sys::{SDL_Event, SDL_EventType, SDL_KeyCode, SDL_PollEvent};
 
-use crate::graphics;
+use crate::{graphics, physics::particle::Particle};
 
 pub struct Application {
     running: bool,
+    // C++ uses a pointer to particle. I'm avoiding for now since it requires lifetimes in Rust
+    particle: Particle,
 }
 
 impl Application {
     pub fn new() -> Self {
-        Application { running: false }
+        let p = Particle::new(50., 100., 1.);
+        Application {
+            running: false,
+            particle: p,
+        }
     }
 
     pub fn is_running(&self) -> bool {
@@ -58,12 +64,19 @@ impl Application {
     }
 
     pub fn update(&self) {
-        todo!()
+        // todo!()
     }
 
     pub fn render(&self) {
         graphics::clear_screen(0xFF056263);
         graphics::draw_fill_circle(200, 200, 40, 0., 0xFFFFFFFF);
+        graphics::draw_fill_circle(
+            self.particle.position.x as i16,
+            self.particle.position.y as i16,
+            1,
+            0.,
+            0xFFFFFFFF,
+        );
         graphics::render_frame();
     }
 
