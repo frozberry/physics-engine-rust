@@ -1,5 +1,6 @@
 extern crate sdl2;
 mod application;
+mod constants;
 mod graphics;
 mod physics;
 

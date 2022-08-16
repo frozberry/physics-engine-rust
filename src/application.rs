@@ -1,11 +1,15 @@
-use std::mem::MaybeUninit;
+use std::{cmp::min, mem::MaybeUninit};
 
-use sdl2::sys::{SDL_Event, SDL_EventType, SDL_KeyCode, SDL_PollEvent};
+use sdl2::sys::{SDL_Delay, SDL_Event, SDL_EventType, SDL_GetTicks, SDL_KeyCode, SDL_PollEvent};
 
-use crate::{graphics, physics::particle::Particle};
+use crate::{
+    constants, graphics,
+    physics::{particle::Particle, vec2::Vec2},
+};
 
 pub struct Application {
     running: bool,
+    time_previous_frame: u32,
     // C++ uses a pointer to particle. I'm avoiding for now since it requires lifetimes in Rust
     particle: Particle,
 }
@@ -15,6 +19,7 @@ impl Application {
         let p = Particle::new(50., 100., 1.);
         Application {
             running: false,
+            time_previous_frame: 0,
             particle: p,
         }
     }
@@ -63,17 +68,41 @@ impl Application {
         }
     }
 
-    pub fn update(&self) {
-        // todo!()
+    pub fn update(&mut self) {
+        // Unsafe calls to SDL only
+        unsafe {
+            let time_since_last_frame = SDL_GetTicks() - self.time_previous_frame;
+            let time_to_wait = constants::MILLISECS_PER_FRAME - time_since_last_frame as i32;
+            if time_to_wait > 0 {
+                SDL_Delay(time_to_wait as u32)
+            }
+        }
+
+        let sdl_ticks;
+        unsafe {
+            sdl_ticks = SDL_GetTicks();
+        }
+
+        let delta_time_ms = (sdl_ticks - self.time_previous_frame) as f32;
+        let mut delta_time = delta_time_ms / 1000.;
+        // Clamp max delta_time
+        if delta_time > 0.016 {
+            delta_time = 0.016;
+        }
+
+        self.particle.velocity = Vec2::new(100. * delta_time, 50. * delta_time);
+        self.particle.position += self.particle.velocity;
+
+        self.time_previous_frame = sdl_ticks;
     }
 
     pub fn render(&self) {
         graphics::clear_screen(0xFF056263);
-        graphics::draw_fill_circle(200, 200, 40, 0., 0xFFFFFFFF);
+        // graphics::draw_fill_circle(200, 200, 40, 0., 0xFFFFFFFF);
         graphics::draw_fill_circle(
             self.particle.position.x as i16,
             self.particle.position.y as i16,
-            1,
+            4,
             0.,
             0xFFFFFFFF,
         );

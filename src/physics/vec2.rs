@@ -1,6 +1,6 @@
 use std::ops;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone, Copy)]
 
 pub struct Vec2 {
     pub x: f32,
@@ -112,10 +112,17 @@ impl ops::Div<f32> for Vec2 {
     }
 }
 
-impl ops::AddAssign<f32> for Vec2 {
-    fn add_assign(&mut self, rhs: f32) {
-        self.x += rhs;
-        self.y += rhs;
+impl ops::AddAssign for Vec2 {
+    fn add_assign(&mut self, rhs: Vec2) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+    }
+}
+
+impl ops::SubAssign for Vec2 {
+    fn sub_assign(&mut self, rhs: Vec2) {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
     }
 }
 
