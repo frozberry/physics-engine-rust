@@ -53,10 +53,7 @@ impl Application {
             while SDL_PollEvent(uninit_event.as_mut_ptr()) != 0 {
                 let event = uninit_event.assume_init();
 
-                // This is bad code, but is needed since the sdl2 crate
-                // only exposes events as enums. But event.type_ is a u32.
-                // If I was using sdl2 the Rust way, this wouldn't be a problem
-                // But I'm trying to replicate the C++ code as closely as possible
+                // Uses constants defined in constants.rs because of SDL2 awkwardness
                 match event.type_ {
                     SDLK_QUIT => {
                         self.running = false;
