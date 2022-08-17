@@ -1,4 +1,4 @@
-use sdl2::sys::{SDL_EventType, SDL_KeyCode};
+use sdl2::sys::{SDL_EventType, SDL_KeyCode, SDL_BUTTON_LEFT};
 
 pub const FPS: i32 = 60;
 pub const MILLISECS_PER_FRAME: i32 = 1000 / FPS;
@@ -9,6 +9,7 @@ pub const PIXELS_PER_METER: f32 = 200.;
 pub const SDLK_QUIT: u32 = SDL_EventType::SDL_QUIT as u32;
 pub const SDLK_KEYDOWN: u32 = SDL_EventType::SDL_KEYDOWN as u32;
 pub const SDLK_KEYUP: u32 = SDL_EventType::SDL_KEYUP as u32;
+pub const SDL_MOUSEBUTTONDOWN: u32 = SDL_EventType::SDL_MOUSEBUTTONDOWN as u32;
 
 // SDL2 crate gives event.key.keysym.sym as an i32
 pub const SDLK_ESCAPE: i32 = SDL_KeyCode::SDLK_ESCAPE as i32;

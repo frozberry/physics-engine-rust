@@ -1,7 +1,8 @@
 use std::{cmp::min, mem::MaybeUninit};
 
 use sdl2::sys::{
-    SDL_Delay, SDL_Event, SDL_EventType, SDL_GetTicks, SDL_KeyCode, SDL_PollEvent, SDL_Rect,
+    SDL_Delay, SDL_Event, SDL_EventType, SDL_GetMouseState, SDL_GetTicks, SDL_KeyCode,
+    SDL_PollEvent, SDL_Rect, SDL_BUTTON_LEFT,
 };
 
 use crate::{
@@ -95,6 +96,15 @@ impl Application {
                         }
                         break;
                     }
+                    SDL_MOUSEBUTTONDOWN => {
+                        if event.button.button == SDL_BUTTON_LEFT as u8 {
+                            let mut x = 1;
+                            let mut y = 1;
+                            SDL_GetMouseState(&mut x, &mut y);
+                            let p = Particle::new(x as f32, y as f32, 1., 4);
+                            self.particles.push(p);
+                        }
+                    }
                     _ => {}
                 }
             }
@@ -120,10 +130,10 @@ impl Application {
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
         for particle in &mut self.particles {
-            let wind = Vec2::new(1. * PIXELS_PER_METER, 0.);
+            // let wind = Vec2::new(1. * PIXELS_PER_METER, 0.);
             let g = Vec2::new(0., 9.81 * PIXELS_PER_METER * particle.mass);
 
-            particle.add_force(wind);
+            // particle.add_force(wind);
             particle.add_force(g);
             particle.add_force(self.push_force);
 
