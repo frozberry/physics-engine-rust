@@ -14,18 +14,19 @@ use crate::{
 pub struct Application {
     running: bool,
     time_previous_frame: u32,
-    // C++ uses a pointer to particle. I'm avoiding for now since it requires lifetimes in Rust
     particles: Vec<Particle>,
+    push_force: Vec2,
 }
 
 impl Application {
     pub fn new() -> Self {
         let small = Particle::new(50., 100., 1., 8);
-        let big = Particle::new(50., 200., 4., 32);
+        // let big = Particle::new(50., 200., 4., 32);
         Application {
             running: false,
             time_previous_frame: 0,
-            particles: vec![small, big],
+            particles: vec![small],
+            push_force: Vec2::new(0., 0.),
         }
     }
 
@@ -61,13 +62,29 @@ impl Application {
                         self.running = false;
                         break;
                     }
-                    SDLK_KEYDOWN => match event.key.keysym.sym {
-                        SDLK_ESCAPE => {
-                            self.running = false;
-                            break;
+                    SDLK_KEYDOWN => {
+                        match event.key.keysym.sym {
+                            SDLK_ESCAPE => {
+                                self.running = false;
+                            }
+                            SDLK_UP => self.push_force.y = -50. * PIXELS_PER_METER,
+                            SDLK_DOWN => self.push_force.y = 50. * PIXELS_PER_METER,
+                            SDLK_LEFT => self.push_force.x = -50. * PIXELS_PER_METER,
+                            SDLK_RIGHT => self.push_force.x = 50. * PIXELS_PER_METER,
+                            _ => {}
                         }
-                        _ => {}
-                    },
+                        break;
+                    }
+                    SDLK_KEYUP => {
+                        match event.key.keysym.sym {
+                            SDLK_UP => self.push_force.y = 0.,
+                            SDLK_DOWN => self.push_force.y = 0.,
+                            SDLK_LEFT => self.push_force.x = 0.,
+                            SDLK_RIGHT => self.push_force.x = 0.,
+                            _ => {}
+                        }
+                        break;
+                    }
                     _ => {}
                 }
             }
@@ -93,17 +110,18 @@ impl Application {
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
         for particle in &mut self.particles {
-            let wind = Vec2::new(1. * PIXELS_PER_METER, 0.);
-            let g = Vec2::new(0., 9.81 * PIXELS_PER_METER * particle.mass);
-
-            particle.add_force(wind);
-            particle.add_force(g);
+            // let wind = Vec2::new(1. * PIXELS_PER_METER, 0.);
+            // let g = Vec2::new(0., 9.81 * PIXELS_PER_METER * particle.mass);
+            // particle.add_force(wind);
+            // particle.add_force(g);
+            particle.add_force(self.push_force);
             particle.integrate(delta_time);
             particle.clear_forces();
         }
 
         let win_height = graphics::height() as f32;
         let win_width = graphics::width() as f32;
+
         for particle in &mut self.particles {
             if particle.pos.y > win_height || particle.pos.y < 0. {
                 particle.pos.y = win_height - particle.radius as f32;
