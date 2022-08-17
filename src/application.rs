@@ -1,9 +1,12 @@
 use std::{cmp::min, mem::MaybeUninit};
 
-use sdl2::sys::{SDL_Delay, SDL_Event, SDL_EventType, SDL_GetTicks, SDL_KeyCode, SDL_PollEvent};
+use sdl2::sys::{
+    SDL_Delay, SDL_Event, SDL_EventType, SDL_GetTicks, SDL_KeyCode, SDL_PollEvent, SDL_Rect,
+};
 
 use crate::{
     constants::*,
+    force::generate_drag_force,
     graphics::{self, height},
     physics::{
         particle::{self, Particle},
@@ -16,17 +19,27 @@ pub struct Application {
     time_previous_frame: u32,
     particles: Vec<Particle>,
     push_force: Vec2,
+    liquid: SDL_Rect,
 }
 
 impl Application {
     pub fn new() -> Self {
         let small = Particle::new(50., 100., 1., 8);
         // let big = Particle::new(50., 200., 4., 32);
+
+        let rect = SDL_Rect {
+            x: 0,
+            y: graphics::height() / 2,
+            w: graphics::width(),
+            h: graphics::height(),
+        };
+
         Application {
             running: false,
             time_previous_frame: 0,
             particles: vec![small],
             push_force: Vec2::new(0., 0.),
+            liquid: rect,
         }
     }
 
@@ -107,11 +120,18 @@ impl Application {
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
         for particle in &mut self.particles {
-            // let wind = Vec2::new(1. * PIXELS_PER_METER, 0.);
-            // let g = Vec2::new(0., 9.81 * PIXELS_PER_METER * particle.mass);
-            // particle.add_force(wind);
-            // particle.add_force(g);
+            let wind = Vec2::new(1. * PIXELS_PER_METER, 0.);
+            let g = Vec2::new(0., 9.81 * PIXELS_PER_METER * particle.mass);
+
+            particle.add_force(wind);
+            particle.add_force(g);
             particle.add_force(self.push_force);
+
+            if particle.pos.y > self.liquid.y as f32 {
+                let drag = generate_drag_force(&particle, 0.01);
+                particle.add_force(drag)
+            }
+
             particle.integrate(delta_time);
             particle.clear_forces();
         }
@@ -144,7 +164,14 @@ impl Application {
 
     pub fn render(&self) {
         graphics::clear_screen(0xFF056263);
-        // graphics::draw_fill_circle(200, 200, 40, 0., 0xFFFFFFFF);
+
+        graphics::draw_fill_rect(
+            (self.liquid.x + self.liquid.w / 2) as i16,
+            (self.liquid.y + self.liquid.h / 2) as i16,
+            self.liquid.w as i16,
+            self.liquid.h as i16,
+            0xFF6E3713,
+        );
 
         for particle in &self.particles {
             graphics::draw_fill_circle(

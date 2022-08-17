@@ -13,11 +13,16 @@ static mut WINDOW: *mut SDL_Window = ptr::null_mut();
 static mut WINDOW_HEIGHT: i32 = 0;
 static mut WINDOW_WIDTH: i32 = 0;
 
+// This is causing issues when calling in application.rs.
+// I think because I'm trying to call unsafe code from a safe function?
+// Just hard coded for now
 pub fn width() -> i32 {
-    unsafe { WINDOW_WIDTH }
+    // unsafe { WINDOW_WIDTH }
+    3440
 }
 pub fn height() -> i32 {
-    unsafe { WINDOW_HEIGHT }
+    // unsafe { WINDOW_HEIGHT }
+    1440
 }
 
 pub fn open_window() -> bool {
