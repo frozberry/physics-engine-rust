@@ -61,12 +61,13 @@ impl Application {
                         self.running = false;
                         break;
                     }
-                    e if e == SDL_EventType::SDL_KEYDOWN as u32 => {
-                        if event.key.keysym.sym == SDL_KeyCode::SDLK_ESCAPE as i32 {
+                    e if e == SDL_EventType::SDL_KEYDOWN as u32 => match event.key.keysym.sym {
+                        SDLK_ESCAPE => {
                             self.running = false;
                             break;
                         }
-                    }
+                        _ => {}
+                    },
                     _ => {}
                 }
             }
