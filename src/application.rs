@@ -7,7 +7,7 @@ use sdl2::sys::{
 
 use crate::{
     constants::*,
-    force::generate_drag_force,
+    force::{generate_drag_force, generate_friction_force},
     graphics::{self, height},
     physics::{
         particle::{self, Particle},
@@ -131,15 +131,19 @@ impl Application {
 
         for particle in &mut self.particles {
             // let wind = Vec2::new(1. * PIXELS_PER_METER, 0.);
-            let g = Vec2::new(0., 9.81 * PIXELS_PER_METER * particle.mass);
-
             // particle.add_force(wind);
-            particle.add_force(g);
+
+            // let g = Vec2::new(0., 9.81 * PIXELS_PER_METER * particle.mass);
+            // particle.add_force(g);
+
+            let friction = generate_friction_force(&particle, 0.006);
+            particle.add_force(friction);
+
             particle.add_force(self.push_force);
 
             if particle.pos.y > self.liquid.y as f32 {
-                let drag = generate_drag_force(&particle, 0.01);
-                particle.add_force(drag)
+                let drag = generate_drag_force(&particle, 0.03);
+                // particle.add_force(drag)
             }
 
             particle.integrate(delta_time);

@@ -12,3 +12,10 @@ pub fn generate_drag_force(particle: &Particle, k: f32) -> Vec2 {
     }
     drag_force
 }
+
+pub fn generate_friction_force(particle: &Particle, k: f32) -> Vec2 {
+    let direction = particle.vel.normalized() * -1.;
+    let magnitude = k * particle.vel.magnitude_squared();
+
+    direction * magnitude
+}
