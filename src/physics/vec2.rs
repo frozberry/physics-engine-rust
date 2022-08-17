@@ -36,6 +36,10 @@ impl Vec2 {
         (f32::powf(self.x, 2.) + f32::powf(self.y, 2.)).sqrt()
     }
 
+    pub fn magnitude_squared(&self) -> f32 {
+        f32::powf(self.x, 2.) + f32::powf(self.y, 2.)
+    }
+
     // C++ returns an pointer to Vec2, my code just mutates in place
     pub fn normalize(&mut self) {
         let length = self.magnitude();
@@ -44,6 +48,14 @@ impl Vec2 {
             self.x /= length;
             self.y /= length;
         }
+    }
+    pub fn normalized(&self) -> Vec2 {
+        let length = self.magnitude();
+
+        let x = if self.x != 0. { self.x / length } else { 0. };
+        let y = if self.y != 0. { self.y / length } else { 0. };
+
+        Vec2::new(x, y)
     }
 
     pub fn unit_vector(&self) -> Vec2 {
