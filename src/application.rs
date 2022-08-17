@@ -3,7 +3,8 @@ use std::{cmp::min, mem::MaybeUninit};
 use sdl2::sys::{SDL_Delay, SDL_Event, SDL_EventType, SDL_GetTicks, SDL_KeyCode, SDL_PollEvent};
 
 use crate::{
-    constants, graphics,
+    constants::*,
+    graphics::{self, height},
     physics::{particle::Particle, vec2::Vec2},
 };
 
@@ -72,7 +73,7 @@ impl Application {
         // Unsafe calls to SDL only
         unsafe {
             let time_since_last_frame = SDL_GetTicks() - self.time_previous_frame;
-            let time_to_wait = constants::MILLISECS_PER_FRAME - time_since_last_frame as i32;
+            let time_to_wait = MILLISECS_PER_FRAME - time_since_last_frame as i32;
             if time_to_wait > 0 {
                 SDL_Delay(time_to_wait as u32)
             }
@@ -84,14 +85,29 @@ impl Application {
         }
 
         let delta_time_ms = (sdl_ticks - self.time_previous_frame) as f32;
-        let mut delta_time = delta_time_ms / 1000.;
-        // Clamp max delta_time
-        if delta_time > 0.016 {
-            delta_time = 0.016;
+        let delta_time = f32::min(delta_time_ms / 1000., 0.016);
+
+        self.particle.acc = Vec2::new(6. * PIXELS_PER_METER, 9.8 * PIXELS_PER_METER as f32);
+
+        self.particle.vel += self.particle.acc * delta_time;
+        self.particle.pos += self.particle.vel * delta_time;
+
+        let win_height = graphics::height() as f32;
+        let win_width = graphics::width() as f32;
+
+        if self.particle.pos.y > win_height || self.particle.pos.y < 0. {
+            self.particle.pos.y = win_height - 4.;
+            self.particle.vel.y *= -0.9
         }
 
-        self.particle.velocity = Vec2::new(100. * delta_time, 50. * delta_time);
-        self.particle.position += self.particle.velocity;
+        if self.particle.pos.x > win_width {
+            self.particle.pos.x = win_width - 4.;
+            self.particle.vel.x *= -0.9;
+        }
+        if self.particle.pos.x < 0. {
+            self.particle.pos.x = 4.;
+            self.particle.vel.x *= -0.9;
+        }
 
         self.time_previous_frame = sdl_ticks;
     }
@@ -100,9 +116,9 @@ impl Application {
         graphics::clear_screen(0xFF056263);
         // graphics::draw_fill_circle(200, 200, 40, 0., 0xFFFFFFFF);
         graphics::draw_fill_circle(
-            self.particle.position.x as i16,
-            self.particle.position.y as i16,
-            4,
+            self.particle.pos.x as i16,
+            self.particle.pos.y as i16,
+            self.particle.radius,
             0.,
             0xFFFFFFFF,
         );
