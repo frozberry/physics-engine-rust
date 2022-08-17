@@ -57,11 +57,11 @@ impl Application {
                 // If I was using sdl2 the Rust way, this wouldn't be a problem
                 // But I'm trying to replicate the C++ code as closely as possible
                 match event.type_ {
-                    e if e == SDL_EventType::SDL_QUIT as u32 => {
+                    SDLK_QUIT => {
                         self.running = false;
                         break;
                     }
-                    e if e == SDL_EventType::SDL_KEYDOWN as u32 => match event.key.keysym.sym {
+                    SDLK_KEYDOWN => match event.key.keysym.sym {
                         SDLK_ESCAPE => {
                             self.running = false;
                             break;
