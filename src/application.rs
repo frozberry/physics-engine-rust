@@ -120,8 +120,12 @@ impl Application {
         let win_width = graphics::width() as f32;
 
         for particle in &mut self.particles {
-            if particle.pos.y > win_height || particle.pos.y < 0. {
+            if particle.pos.y > win_height {
                 particle.pos.y = win_height - particle.radius as f32;
+                particle.vel.y *= -0.9
+            }
+            if particle.pos.y < 0. {
+                particle.pos.y = particle.radius as f32;
                 particle.vel.y *= -0.9
             }
 
