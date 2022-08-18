@@ -1,6 +1,6 @@
 use super::vec2::Vec2;
 
-pub struct Particle {
+pub struct Body {
     pub pos: Vec2,
     pub vel: Vec2,
     pub acc: Vec2,
@@ -10,10 +10,10 @@ pub struct Particle {
     pub net_force: Vec2,
 }
 
-impl Particle {
+impl Body {
     pub fn new(x: f32, y: f32, mass: f32, radius: i16) -> Self {
         let inv_mass = if mass > 0. { 1. / mass } else { 0. };
-        Particle {
+        Body {
             pos: Vec2::new(x, y),
             vel: Vec2::new(0., 0.),
             acc: Vec2::new(0., 0.),

@@ -12,7 +12,7 @@ use crate::{
     },
     graphics::{self, height},
     physics::{
-        particle::{self, Particle},
+        body::{self, Body},
         vec2::Vec2,
     },
 };
@@ -20,7 +20,7 @@ use crate::{
 pub struct Application {
     running: bool,
     time_previous_frame: u32,
-    particles: Vec<Particle>,
+    particles: Vec<Body>,
     push_force: Vec2,
     liquid: SDL_Rect,
     mouse_cursor: Vec2,
@@ -56,7 +56,7 @@ impl Application {
             rest_length: 50.,
         };
         for i in 0..num {
-            let p = Particle::new(1440., 200. + i as f32 * 100., 1., 4);
+            let p = Body::new(1440., 200. + i as f32 * 100., 1., 4);
             application.particles.push(p);
         }
 

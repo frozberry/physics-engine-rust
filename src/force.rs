@@ -1,7 +1,7 @@
-use crate::physics::{particle::Particle, vec2::Vec2};
+use crate::physics::{body::Body, vec2::Vec2};
 
 // F = k * |v|^2 * -(unit_vector)
-pub fn generate_drag_force(particle: &Particle, k: f32) -> Vec2 {
+pub fn generate_drag_force(particle: &Body, k: f32) -> Vec2 {
     let mut drag_force = Vec2::new(0., 0.);
 
     // Skip calculation if unecessary
@@ -13,7 +13,7 @@ pub fn generate_drag_force(particle: &Particle, k: f32) -> Vec2 {
     drag_force
 }
 
-pub fn generate_friction_force(particle: &Particle, k: f32) -> Vec2 {
+pub fn generate_friction_force(particle: &Body, k: f32) -> Vec2 {
     let direction = particle.vel.normalized() * -1.;
     let magnitude = k * particle.vel.magnitude_squared();
 
@@ -22,8 +22,8 @@ pub fn generate_friction_force(particle: &Particle, k: f32) -> Vec2 {
 
 // F = (G * m_a * m_b / d^2) * unit vector
 pub fn generate_gravitational_force(
-    a: &Particle,
-    b: &Particle,
+    a: &Body,
+    b: &Body,
     g: f32,
     min_distance: f32,
     max_distance: f32,
@@ -37,7 +37,7 @@ pub fn generate_gravitational_force(
     distance * magnitude
 }
 
-pub fn generate_spring_force(particle: &Particle, anchor: Vec2, rest_length: f32, k: f32) -> Vec2 {
+pub fn generate_spring_force(particle: &Body, anchor: Vec2, rest_length: f32, k: f32) -> Vec2 {
     let distance = particle.pos - anchor;
     let displacement = distance.magnitude() - rest_length;
 
@@ -47,12 +47,7 @@ pub fn generate_spring_force(particle: &Particle, anchor: Vec2, rest_length: f32
     direction * magnitude
 }
 
-pub fn generate_spring_force_particles(
-    a: &Particle,
-    b: &Particle,
-    rest_length: f32,
-    k: f32,
-) -> Vec2 {
+pub fn generate_spring_force_particles(a: &Body, b: &Body, rest_length: f32, k: f32) -> Vec2 {
     let distance = a.pos - b.pos;
     let displacement = distance.magnitude() - rest_length;
 
