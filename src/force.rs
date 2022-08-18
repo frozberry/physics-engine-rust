@@ -36,3 +36,28 @@ pub fn generate_gravitational_force(
 
     distance * magnitude
 }
+
+pub fn generate_spring_force(particle: &Particle, anchor: Vec2, rest_length: f32, k: f32) -> Vec2 {
+    let distance = particle.pos - anchor;
+    let displacement = distance.magnitude() - rest_length;
+
+    let direction = distance.unit_vector();
+    let magnitude = -k * displacement;
+
+    direction * magnitude
+}
+
+pub fn generate_spring_force_particles(
+    a: &Particle,
+    b: &Particle,
+    rest_length: f32,
+    k: f32,
+) -> Vec2 {
+    let distance = a.pos - b.pos;
+    let displacement = distance.magnitude() - rest_length;
+
+    let direction = distance.unit_vector();
+    let magnitude = -k * displacement;
+
+    direction * magnitude
+}

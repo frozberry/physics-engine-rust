@@ -6,7 +6,10 @@ use sdl2::sys::{
 
 use crate::{
     constants::*,
-    force::{generate_drag_force, generate_friction_force, generate_gravitational_force},
+    force::{
+        generate_drag_force, generate_friction_force, generate_gravitational_force,
+        generate_spring_force, generate_spring_force_particles,
+    },
     graphics::{self, height},
     physics::{
         particle::{self, Particle},
@@ -22,13 +25,13 @@ pub struct Application {
     liquid: SDL_Rect,
     mouse_cursor: Vec2,
     left_mouse_button_down: bool,
+    anchor: Vec2,
+    k: f32,
+    rest_length: f32,
 }
 
 impl Application {
     pub fn new() -> Self {
-        let small = Particle::new(50., 500., 1.);
-        let big = Particle::new(1000., 700., 20.);
-
         let rect = SDL_Rect {
             x: 0,
             y: graphics::height() / 2,
@@ -36,15 +39,24 @@ impl Application {
             h: graphics::height(),
         };
 
-        Application {
+        let mut application = Application {
             running: false,
             time_previous_frame: 0,
-            particles: vec![small, big],
+            particles: vec![],
             push_force: Vec2::new(0., 0.),
             liquid: rect,
             mouse_cursor: Vec2::new(0., 0.),
             left_mouse_button_down: false,
+            anchor: Vec2::new(1440., 200.),
+            k: 100.,
+            rest_length: 100.,
+        };
+        for i in 0..6 {
+            let p = Particle::new(1440., 200. + i as f32 * 100., 1., 4);
+            application.particles.push(p);
         }
+
+        application
     }
 
     pub fn is_running(&self) -> bool {
@@ -165,31 +177,36 @@ impl Application {
         let delta_time_ms = (sdl_ticks - self.time_previous_frame) as f32;
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
-        let attraction =
-            generate_gravitational_force(&self.particles[0], &self.particles[1], 4.0, 5., 200.);
-
+        // let attraction =
+        //     generate_gravitational_force(&self.particles[0], &self.particles[1], 0.4, 5., 100.);
         // self.particles[0].add_force(attraction);
         // self.particles[1].add_force(-attraction);
 
         for particle in &mut self.particles {
-            // let wind = Vec2::new(1. * PIXELS_PER_METER, 0.);
-            // particle.add_force(wind);
+            let drag = generate_drag_force(particle, 0.001);
+            particle.add_force(drag);
 
-            // let g = Vec2::new(0., 9.81 * PIXELS_PER_METER * particle.mass);
-            // particle.add_force(g);
-
-            let friction = generate_friction_force(&particle, 0.006);
-            particle.add_force(friction);
+            let weight = Vec2::new(0.0, particle.mass * 9.8 * PIXELS_PER_METER);
+            particle.add_force(weight);
 
             particle.add_force(self.push_force);
 
-            // if particle.pos.y > self.liquid.y as f32 {
-            //     let drag = generate_drag_force(&particle, 0.03);
-            //     particle.add_force(drag)
-            // }
-
             particle.integrate(delta_time);
             particle.clear_forces();
+        }
+
+        let spring_force =
+            generate_spring_force(&self.particles[0], self.anchor, self.rest_length, self.k);
+        self.particles[0].add_force(spring_force);
+
+        for i in 1..6 {
+            let sf = generate_spring_force_particles(
+                &self.particles[i],
+                &self.particles[i - 1],
+                5.,
+                self.k,
+            );
+            self.particles[i].add_force(sf);
         }
 
         let win_height = graphics::height() as f32;
@@ -230,6 +247,32 @@ impl Application {
                 0xFF0000FF,
             );
         }
+
+        graphics::draw_line(
+            self.anchor.x as i16,
+            self.anchor.y as i16,
+            self.particles[0].pos.x as i16,
+            self.particles[0].pos.y as i16,
+            0xFFFFFFFF,
+        );
+
+        for i in 0..5 {
+            graphics::draw_line(
+                self.particles[i].pos.x as i16,
+                self.particles[i].pos.y as i16,
+                self.particles[i + 1].pos.x as i16,
+                self.particles[i + 1].pos.y as i16,
+                0xFFFFFFFF,
+            );
+        }
+
+        graphics::draw_fill_circle(
+            self.anchor.x as i16,
+            self.anchor.y as i16,
+            5,
+            0.,
+            0xFFFFFFFF,
+        );
 
         // graphics::draw_fill_rect(
         //     (self.liquid.x + self.liquid.w / 2) as i16,
