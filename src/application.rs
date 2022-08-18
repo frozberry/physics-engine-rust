@@ -30,6 +30,8 @@ impl Application {
     pub fn new() -> Self {
         let a = Body::new(200., 200., 1., Shape::Circle(50.));
         let b = Body::new(600., 200., 3., Shape::Circle(80.));
+        let c = Body::new(500., 500., 1., Shape::Box(10., 40.));
+
         let mut application = Application {
             running: false,
             time_previous_frame: 0,
@@ -41,6 +43,7 @@ impl Application {
 
         application.bodies.push(a);
         application.bodies.push(b);
+        application.bodies.push(c);
         application
     }
 
@@ -167,7 +170,7 @@ impl Application {
             body.add_force(drag);
 
             let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
-            body.add_force(weight);
+            // body.add_force(weight);
 
             body.add_force(self.push_force);
 
@@ -234,6 +237,13 @@ impl Application {
                         0xFFFFFFFF,
                     );
                 }
+                Shape::Box(w, h) => graphics::draw_fill_rect(
+                    body.pos.x as i16,
+                    body.pos.y as i16,
+                    w as i16,
+                    h as i16,
+                    0xFFFFFFFF,
+                ),
                 _ => {}
             }
         }

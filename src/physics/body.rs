@@ -1,5 +1,9 @@
 use super::vec2::Vec2;
 
+struct Polygon {
+    vertices: Vec<f32>,
+}
+
 pub enum Shape {
     // Circle(radius)
     Circle(f32),
@@ -7,7 +11,7 @@ pub enum Shape {
     // Polygon(Vec<vertices>)
     Polygon(Vec<Vec2>),
 
-    // Box<width, height>
+    // Box<width, height, x, y>
     Box(f32, f32),
 }
 
@@ -78,10 +82,27 @@ impl Body {
         self.net_torque += torque;
     }
 
+    pub fn get_verticies(&self) -> Option<Vec<Vec2>> {
+        match &self.shape {
+            Shape::Circle(_) => None,
+            Shape::Polygon(vertices) => Some(vertices.to_vec()),
+            Shape::Box(w, h) => {
+                let x = self.pos.x;
+                let y = self.pos.y;
+                let a = Vec2::new(x + w / 2., y + h / 2.);
+                let b = Vec2::new(x + w / 2., y - h / 2.);
+                let c = Vec2::new(x - w / 2., y + h / 2.);
+                let d = Vec2::new(x - w / 2., y - h / 2.);
+                Some(vec![a, b, c, d])
+            }
+        }
+    }
+
     fn clear_forces(&mut self) {
         self.net_force.x = 0.;
         self.net_force.y = 0.;
     }
+
     fn clear_torque(&mut self) {
         self.net_torque = 0.;
     }

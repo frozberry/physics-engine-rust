@@ -6,6 +6,7 @@ mod graphics;
 mod physics;
 
 use application::Application;
+use physics::body::Shape;
 
 fn main() {
     let mut app = Application::new();
