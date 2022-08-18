@@ -237,13 +237,6 @@ impl Application {
                         0xFFFFFFFF,
                     );
                 }
-                // Shape::Box(w, h) => graphics::draw_fill_rect(
-                //     body.pos.x as i16,
-                //     body.pos.y as i16,
-                //     w as i16,
-                //     h as i16,
-                //     0xFFFFFFFF,
-                // ),
                 Shape::Box(_, _) => graphics::draw_polygon(
                     body.pos.x as i16,
                     body.pos.y as i16,
