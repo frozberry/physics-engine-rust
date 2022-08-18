@@ -28,7 +28,7 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let a = Body::new(200., 200., 1., Shape::Circle(40.));
+        let a = Body::new(200., 200., 1., Shape::Circle(50.));
         let b = Body::new(600., 200., 3., Shape::Circle(80.));
         let mut application = Application {
             running: false,
@@ -163,8 +163,6 @@ impl Application {
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
         for body in &mut self.bodies {
-            body.rotation += 0.1;
-
             let drag = generate_drag_force(body, 0.001);
             body.add_force(drag);
 
@@ -173,9 +171,11 @@ impl Application {
 
             body.add_force(self.push_force);
 
+            let torque = 20.;
+            body.add_torque(torque);
+
             body.integrate_linear(delta_time);
             body.integrate_angular(delta_time);
-            body.clear_forces();
         }
 
         let win_height = graphics::height() as f32;

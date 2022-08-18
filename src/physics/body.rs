@@ -32,7 +32,7 @@ impl Body {
         let inv_mass = if mass > 0. { 1. / mass } else { 0. };
 
         let inertia = match shape {
-            Shape::Circle(radius) => mass * radius * radius / 2.,
+            Shape::Circle(radius) => mass * radius * radius * 0.5,
             _ => 0.,
         };
         let inv_inertia = if inertia > 0. { 1. / inertia } else { 0. };
@@ -58,22 +58,31 @@ impl Body {
         self.acc = self.net_force * self.inv_mass;
         self.vel += self.acc * dt;
         self.pos += self.vel * dt;
+
+        self.clear_forces();
     }
 
     pub fn integrate_angular(&mut self, dt: f32) {
         self.ang_acc += self.net_torque * self.inv_inertia;
         self.ang_vel += self.ang_acc * dt;
-        self.rotation += self.ang_vel;
+        self.rotation += self.ang_vel * dt;
+
+        self.clear_torque();
     }
 
     pub fn add_force(&mut self, force: Vec2) {
         self.net_force += force;
     }
 
-    pub fn clear_forces(&mut self) {
+    pub fn add_torque(&mut self, torque: f32) {
+        self.net_torque += torque;
+    }
+
+    fn clear_forces(&mut self) {
         self.net_force.x = 0.;
         self.net_force.y = 0.;
     }
-
-    pub fn get_moment_of_inertia(&self) {}
+    fn clear_torque(&mut self) {
+        self.net_torque = 0.;
+    }
 }
