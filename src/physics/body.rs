@@ -36,7 +36,10 @@ impl Body {
         let inv_mass = if mass > 0. { 1. / mass } else { 0. };
 
         let inertia = match shape {
+            // 1/2 * m   r^2
             Shape::Circle(radius) => mass * radius * radius * 0.5,
+            // 1/12 * (w^2 + h ^2)
+            Shape::Box(w, h) => mass * 0.0833333 * (w * w + h * h),
             _ => 0.,
         };
         let inv_inertia = if inertia > 0. { 1. / inertia } else { 0. };
@@ -90,9 +93,9 @@ impl Body {
                 let x = self.pos.x;
                 let y = self.pos.y;
                 let a = Vec2::new(x + w / 2., y + h / 2.);
-                let b = Vec2::new(x + w / 2., y - h / 2.);
-                let c = Vec2::new(x - w / 2., y + h / 2.);
-                let d = Vec2::new(x - w / 2., y - h / 2.);
+                let b = Vec2::new(x - w / 2., y + h / 2.);
+                let c = Vec2::new(x - w / 2., y - h / 2.);
+                let d = Vec2::new(x + w / 2., y - h / 2.);
                 Some(vec![a, b, c, d])
             }
         }
