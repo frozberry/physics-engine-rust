@@ -8,7 +8,7 @@ use crate::{
     constants::*,
     force::{
         generate_drag_force, generate_friction_force, generate_gravitational_force,
-        generate_spring_force, generate_spring_force_particles,
+        generate_spring_force, generate_spring_force_bodies,
     },
     graphics::{self, height},
     physics::{
@@ -162,19 +162,20 @@ impl Application {
         let delta_time_ms = (sdl_ticks - self.time_previous_frame) as f32;
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
-        for particle in &mut self.bodies {
-            particle.rotation += 0.1;
+        for body in &mut self.bodies {
+            body.rotation += 0.1;
 
-            let drag = generate_drag_force(particle, 0.001);
-            particle.add_force(drag);
+            let drag = generate_drag_force(body, 0.001);
+            body.add_force(drag);
 
-            let weight = Vec2::new(0.0, particle.mass * 9.8 * PIXELS_PER_METER);
-            particle.add_force(weight);
+            let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
+            body.add_force(weight);
 
-            particle.add_force(self.push_force);
+            body.add_force(self.push_force);
 
-            particle.integrate(delta_time);
-            particle.clear_forces();
+            body.integrate_linear(delta_time);
+            body.integrate_angular(delta_time);
+            body.clear_forces();
         }
 
         let win_height = graphics::height() as f32;
