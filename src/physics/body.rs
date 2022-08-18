@@ -46,7 +46,12 @@ impl Body {
         }
     }
 
-    pub fn integrate_linear(&mut self, dt: f32) {
+    pub fn update(&mut self, dt: f32) {
+        self.integrate_linear(dt);
+        self.integrate_angular(dt);
+    }
+
+    fn integrate_linear(&mut self, dt: f32) {
         self.acc = self.net_force * self.inv_mass;
         self.vel += self.acc * dt;
         self.pos += self.vel * dt;
@@ -54,7 +59,7 @@ impl Body {
         self.clear_forces();
     }
 
-    pub fn integrate_angular(&mut self, dt: f32) {
+    fn integrate_angular(&mut self, dt: f32) {
         self.ang_acc += self.net_torque * self.inv_inertia;
         self.ang_vel += self.ang_acc * dt;
         self.rotation += self.ang_vel * dt;

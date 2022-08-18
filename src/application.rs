@@ -167,19 +167,18 @@ impl Application {
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
         for body in &mut self.bodies {
-            // let drag = generate_drag_force(body, 0.001);
-            // body.add_force(drag);
+            let drag = generate_drag_force(body, 0.001);
+            body.add_force(drag);
 
-            // let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
-            // body.add_force(weight);
+            let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
+            body.add_force(weight);
 
-            // body.add_force(self.push_force);
+            body.add_force(self.push_force);
 
             let torque = 200.;
             body.add_torque(torque);
 
-            body.integrate_linear(delta_time);
-            body.integrate_angular(delta_time);
+            body.update(delta_time);
         }
 
         let win_height = graphics::height() as f32;
