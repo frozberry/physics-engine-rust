@@ -10,6 +10,8 @@ pub const SDLK_QUIT: u32 = SDL_EventType::SDL_QUIT as u32;
 pub const SDLK_KEYDOWN: u32 = SDL_EventType::SDL_KEYDOWN as u32;
 pub const SDLK_KEYUP: u32 = SDL_EventType::SDL_KEYUP as u32;
 pub const SDL_MOUSEBUTTONDOWN: u32 = SDL_EventType::SDL_MOUSEBUTTONDOWN as u32;
+pub const SDL_MOUSEBUTTONUP: u32 = SDL_EventType::SDL_MOUSEBUTTONUP as u32;
+pub const SDL_MOUSEMOTION: u32 = SDL_EventType::SDL_MOUSEMOTION as u32;
 
 // SDL2 crate gives event.key.keysym.sym as an i32
 pub const SDLK_ESCAPE: i32 = SDL_KeyCode::SDLK_ESCAPE as i32;
