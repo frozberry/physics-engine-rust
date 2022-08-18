@@ -7,7 +7,7 @@ use sdl2::sys::{
 
 use crate::{
     constants::*,
-    force::{generate_drag_force, generate_friction_force},
+    force::{generate_drag_force, generate_friction_force, generate_gravitational_force},
     graphics::{self, height},
     physics::{
         particle::{self, Particle},
@@ -25,8 +25,8 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let small = Particle::new(50., 100., 1., 8);
-        // let big = Particle::new(50., 200., 4., 32);
+        let small = Particle::new(50., 500., 1.);
+        let big = Particle::new(1000., 700., 20.);
 
         let rect = SDL_Rect {
             x: 0,
@@ -38,7 +38,7 @@ impl Application {
         Application {
             running: false,
             time_previous_frame: 0,
-            particles: vec![small],
+            particles: vec![small, big],
             push_force: Vec2::new(0., 0.),
             liquid: rect,
         }
@@ -101,7 +101,7 @@ impl Application {
                             let mut x = 1;
                             let mut y = 1;
                             SDL_GetMouseState(&mut x, &mut y);
-                            let p = Particle::new(x as f32, y as f32, 1., 4);
+                            let p = Particle::new(x as f32, y as f32, 1.);
                             self.particles.push(p);
                         }
                     }
@@ -129,6 +129,12 @@ impl Application {
         let delta_time_ms = (sdl_ticks - self.time_previous_frame) as f32;
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
+        let attraction =
+            generate_gravitational_force(&self.particles[0], &self.particles[1], 4.0, 5., 200.);
+
+        self.particles[0].add_force(attraction);
+        self.particles[1].add_force(-attraction);
+
         for particle in &mut self.particles {
             // let wind = Vec2::new(1. * PIXELS_PER_METER, 0.);
             // particle.add_force(wind);
@@ -141,10 +147,10 @@ impl Application {
 
             particle.add_force(self.push_force);
 
-            if particle.pos.y > self.liquid.y as f32 {
-                let drag = generate_drag_force(&particle, 0.03);
-                // particle.add_force(drag)
-            }
+            // if particle.pos.y > self.liquid.y as f32 {
+            //     let drag = generate_drag_force(&particle, 0.03);
+            //     particle.add_force(drag)
+            // }
 
             particle.integrate(delta_time);
             particle.clear_forces();

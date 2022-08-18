@@ -11,7 +11,7 @@ pub struct Particle {
 }
 
 impl Particle {
-    pub fn new(x: f32, y: f32, mass: f32, radius: i16) -> Self {
+    pub fn new(x: f32, y: f32, mass: f32) -> Self {
         let inv_mass = if mass > 0. { 1. / mass } else { 0. };
         Particle {
             pos: Vec2::new(x, y),
@@ -19,7 +19,7 @@ impl Particle {
             acc: Vec2::new(0., 0.),
             mass,
             inv_mass,
-            radius,
+            radius: (mass * 4.0) as i16,
             net_force: Vec2::new(0., 0.),
         }
     }
