@@ -12,7 +12,8 @@ use crate::{
     },
     graphics::{self, height},
     physics::{
-        body::{self, Body, Shape},
+        body::{self, Body},
+        shape::Shape,
         vec2::Vec2,
     },
 };
