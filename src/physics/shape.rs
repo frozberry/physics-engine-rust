@@ -12,6 +12,16 @@ pub enum Shape {
 }
 
 impl Shape {
+    pub fn calc_inertia(&self, mass: f32) -> f32 {
+        match self {
+            // 1/2 * m   r^2
+            Shape::Circle(radius) => mass * radius * radius * 0.5,
+            // 1/12 * (w^2 + h ^2)
+            Shape::Box(w, h) => mass * 0.0833333 * (w * w + h * h),
+            _ => 0.,
+        }
+    }
+
     pub fn get_local_verticies(&self) -> Option<Vec<Vec2>> {
         match self {
             Shape::Circle(_) => None,

@@ -20,13 +20,7 @@ impl Body {
     pub fn new(x: f32, y: f32, mass: f32, shape: Shape) -> Self {
         let inv_mass = if mass > 0. { 1. / mass } else { 0. };
 
-        let inertia = match shape {
-            // 1/2 * m   r^2
-            Shape::Circle(radius) => mass * radius * radius * 0.5,
-            // 1/12 * (w^2 + h ^2)
-            Shape::Box(w, h) => mass * 0.0833333 * (w * w + h * h),
-            _ => 0.,
-        };
+        let inertia = shape.calc_inertia(mass);
         let inv_inertia = if inertia > 0. { 1. / inertia } else { 0. };
 
         Body {
