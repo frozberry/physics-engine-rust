@@ -27,9 +27,10 @@ impl Vec2 {
         self.y *= n;
     }
 
-    pub fn rotate(&mut self, angle: f32) {
-        self.x = self.x * angle.cos() - self.y * angle.sin();
-        self.y = self.x * angle.sin() + self.y * angle.cos();
+    pub fn rotate(&self, angle: f32) -> Vec2 {
+        let x = self.x * angle.cos() - self.y * angle.sin();
+        let y = self.x * angle.sin() + self.y * angle.cos();
+        Vec2::new(x, y)
     }
 
     pub fn magnitude(&self) -> f32 {
