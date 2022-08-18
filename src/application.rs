@@ -179,24 +179,27 @@ impl Application {
         let win_width = graphics::width() as f32;
 
         for body in &mut self.bodies {
-            if let Shape::Circle(radius) = body.shape {
-                if body.pos.y > win_height {
-                    body.pos.y = win_height - radius;
-                    body.vel.y *= -0.9
-                }
-                if body.pos.y < 0. {
-                    body.pos.y = radius;
-                    body.vel.y *= -0.9
-                }
+            match body.shape {
+                Shape::Circle(radius) => {
+                    if body.pos.y > win_height {
+                        body.pos.y = win_height - radius;
+                        body.vel.y *= -0.9
+                    }
+                    if body.pos.y < 0. {
+                        body.pos.y = radius;
+                        body.vel.y *= -0.9
+                    }
 
-                if body.pos.x > win_width {
-                    body.pos.x = win_width - radius;
-                    body.vel.x *= -0.9;
+                    if body.pos.x > win_width {
+                        body.pos.x = win_width - radius;
+                        body.vel.x *= -0.9;
+                    }
+                    if body.pos.x < 0. {
+                        body.pos.x = radius;
+                        body.vel.x *= -0.9;
+                    }
                 }
-                if body.pos.x < 0. {
-                    body.pos.x = radius;
-                    body.vel.x *= -0.9;
-                }
+                _ => {}
             }
         }
 
@@ -216,15 +219,19 @@ impl Application {
             );
         }
 
-        for particle in &self.bodies {
-            if let Shape::Circle(radius) = particle.shape {
-                graphics::draw_fill_circle(
-                    particle.pos.x as i16,
-                    particle.pos.y as i16,
-                    radius as i16,
-                    0.,
-                    0xFFFFFFFF,
-                );
+        // Draw bodies
+        for body in &self.bodies {
+            match body.shape {
+                Shape::Circle(radius) => {
+                    graphics::draw_fill_circle(
+                        body.pos.x as i16,
+                        body.pos.y as i16,
+                        radius as i16,
+                        0.,
+                        0xFFFFFFFF,
+                    );
+                }
+                _ => {}
             }
         }
         graphics::render_frame();
