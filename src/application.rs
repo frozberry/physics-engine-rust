@@ -24,7 +24,6 @@ pub struct Application {
     push_force: Vec2,
     mouse_cursor: Vec2,
     left_mouse_button_down: bool,
-    rotation: f32,
 }
 
 impl Application {
@@ -38,7 +37,6 @@ impl Application {
             push_force: Vec2::new(0., 0.),
             mouse_cursor: Vec2::new(0., 0.),
             left_mouse_button_down: false,
-            rotation: 0.,
         };
 
         application.bodies.push(a);
@@ -165,6 +163,8 @@ impl Application {
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
         for particle in &mut self.bodies {
+            particle.rotation += 0.1;
+
             let drag = generate_drag_force(particle, 0.001);
             particle.add_force(drag);
 
@@ -205,13 +205,6 @@ impl Application {
             }
         }
 
-        self.rotation += 0.1;
-        // if self.rotation == 0.0 {
-        //     self.rotation = 1.0
-        // } else {
-        //     self.rotation = 0.0
-        // }
-
         self.time_previous_frame = sdl_ticks;
     }
 
@@ -236,7 +229,7 @@ impl Application {
                         body.pos.x as i16,
                         body.pos.y as i16,
                         radius as i16,
-                        self.rotation,
+                        body.rotation,
                         0xFFFFFFFF,
                     );
                 }

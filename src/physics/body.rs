@@ -19,6 +19,9 @@ pub struct Body {
     pub inv_mass: f32,
     pub net_force: Vec2,
     pub shape: Shape,
+    pub rotation: f32,
+    pub ang_vel: f32,
+    pub ang_acc: f32,
 }
 
 impl Body {
@@ -32,6 +35,9 @@ impl Body {
             inv_mass,
             net_force: Vec2::new(0., 0.),
             shape,
+            rotation: 0.,
+            ang_vel: 0.,
+            ang_acc: 0.,
         }
     }
 
@@ -39,6 +45,9 @@ impl Body {
         self.acc = self.net_force * self.inv_mass;
         self.vel += self.acc * dt;
         self.pos += self.vel * dt;
+
+        self.ang_vel += self.ang_acc * dt;
+        self.rotation += self.ang_vel;
     }
 
     pub fn add_force(&mut self, force: Vec2) {
