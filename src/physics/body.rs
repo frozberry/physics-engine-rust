@@ -1,17 +1,23 @@
 use super::vec2::Vec2;
 
+enum Shape {
+    Circle(f32),
+    Polygon(Vec<Vec2>),
+    Box(f32, f32),
+}
+
 pub struct Body {
     pub pos: Vec2,
     pub vel: Vec2,
     pub acc: Vec2,
     pub mass: f32,
     pub inv_mass: f32,
-    pub radius: i16,
     pub net_force: Vec2,
+    shape: Shape,
 }
 
 impl Body {
-    pub fn new(x: f32, y: f32, mass: f32, radius: i16) -> Self {
+    pub fn new(x: f32, y: f32, mass: f32, shape: Shape) -> Self {
         let inv_mass = if mass > 0. { 1. / mass } else { 0. };
         Body {
             pos: Vec2::new(x, y),
@@ -19,9 +25,8 @@ impl Body {
             acc: Vec2::new(0., 0.),
             mass,
             inv_mass,
-            // radius: (mass * 4.0) as i16,
-            radius,
             net_force: Vec2::new(0., 0.),
+            shape,
         }
     }
 
@@ -39,4 +44,6 @@ impl Body {
         self.net_force.x = 0.;
         self.net_force.y = 0.;
     }
+
+    pub fn get_moment_of_inertia(&self) {}
 }
