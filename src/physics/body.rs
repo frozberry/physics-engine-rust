@@ -13,7 +13,7 @@ pub struct Body {
     pub mass: f32,
     pub inv_mass: f32,
     pub net_force: Vec2,
-    shape: Shape,
+    pub shape: Shape,
 }
 
 impl Body {

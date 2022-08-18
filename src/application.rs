@@ -20,7 +20,7 @@ use crate::{
 pub struct Application {
     running: bool,
     time_previous_frame: u32,
-    particles: Vec<Body>,
+    bodies: Vec<Body>,
     push_force: Vec2,
     mouse_cursor: Vec2,
     left_mouse_button_down: bool,
@@ -28,16 +28,19 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let circle = Body::new(200., 200., 1., Shape::Circle(4.));
+        let a = Body::new(200., 200., 1., Shape::Circle(4.));
+        let b = Body::new(600., 200., 3., Shape::Circle(20.));
         let mut application = Application {
             running: false,
             time_previous_frame: 0,
-            particles: vec![],
+            bodies: vec![],
             push_force: Vec2::new(0., 0.),
             mouse_cursor: Vec2::new(0., 0.),
             left_mouse_button_down: false,
         };
 
+        application.bodies.push(a);
+        application.bodies.push(b);
         application
     }
 
@@ -128,10 +131,10 @@ impl Application {
                             && event.button.button == SDL_BUTTON_LEFT as u8
                         {
                             self.left_mouse_button_down = false;
-                            let distance = self.particles[0].pos - self.mouse_cursor;
+                            let distance = self.bodies[0].pos - self.mouse_cursor;
                             let impulse_direction = distance.unit_vector();
                             let impulse_magnitude = distance.magnitude() * 5.0;
-                            self.particles[0].vel = impulse_direction * impulse_magnitude;
+                            self.bodies[0].vel = impulse_direction * impulse_magnitude;
                         }
                         break;
                     }
@@ -159,7 +162,7 @@ impl Application {
         let delta_time_ms = (sdl_ticks - self.time_previous_frame) as f32;
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
-        for particle in &mut self.particles {
+        for particle in &mut self.bodies {
             let drag = generate_drag_force(particle, 0.001);
             particle.add_force(drag);
 
@@ -175,23 +178,25 @@ impl Application {
         let win_height = graphics::height() as f32;
         let win_width = graphics::width() as f32;
 
-        for particle in &mut self.particles {
-            if particle.pos.y > win_height {
-                particle.pos.y = win_height - particle.radius as f32;
-                particle.vel.y *= -0.9
-            }
-            if particle.pos.y < 0. {
-                particle.pos.y = particle.radius as f32;
-                particle.vel.y *= -0.9
-            }
+        for body in &mut self.bodies {
+            if let Shape::Circle(radius) = body.shape {
+                if body.pos.y > win_height {
+                    body.pos.y = win_height - radius;
+                    body.vel.y *= -0.9
+                }
+                if body.pos.y < 0. {
+                    body.pos.y = radius;
+                    body.vel.y *= -0.9
+                }
 
-            if particle.pos.x > win_width {
-                particle.pos.x = win_width - particle.radius as f32;
-                particle.vel.x *= -0.9;
-            }
-            if particle.pos.x < 0. {
-                particle.pos.x = particle.radius as f32;
-                particle.vel.x *= -0.9;
+                if body.pos.x > win_width {
+                    body.pos.x = win_width - radius;
+                    body.vel.x *= -0.9;
+                }
+                if body.pos.x < 0. {
+                    body.pos.x = radius;
+                    body.vel.x *= -0.9;
+                }
             }
         }
 
@@ -203,22 +208,24 @@ impl Application {
 
         if self.left_mouse_button_down {
             graphics::draw_line(
-                self.particles[self.num - 1].pos.x as i16,
-                self.particles[self.num - 1].pos.y as i16,
+                self.bodies[0].pos.x as i16,
+                self.bodies[0].pos.y as i16,
                 self.mouse_cursor.x as i16,
                 self.mouse_cursor.y as i16,
                 0xFF0000FF,
             );
         }
 
-        for particle in &self.particles {
-            graphics::draw_fill_circle(
-                particle.pos.x as i16,
-                particle.pos.y as i16,
-                particle.radius,
-                0.,
-                0xFFFFFFFF,
-            );
+        for particle in &self.bodies {
+            if let Shape::Circle(radius) = particle.shape {
+                graphics::draw_fill_circle(
+                    particle.pos.x as i16,
+                    particle.pos.y as i16,
+                    radius as i16,
+                    0.,
+                    0xFFFFFFFF,
+                );
+            }
         }
         graphics::render_frame();
     }
