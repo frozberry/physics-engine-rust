@@ -1,6 +1,6 @@
 use super::vec2::Vec2;
 
-enum Shape {
+pub enum Shape {
     Circle(f32),
     Polygon(Vec<Vec2>),
     Box(f32, f32),

@@ -12,7 +12,7 @@ use crate::{
     },
     graphics::{self, height},
     physics::{
-        particle::{self, Particle},
+        body::{self, Body, Shape},
         vec2::Vec2,
     },
 };
@@ -20,45 +20,23 @@ use crate::{
 pub struct Application {
     running: bool,
     time_previous_frame: u32,
-    particles: Vec<Particle>,
+    particles: Vec<Body>,
     push_force: Vec2,
-    liquid: SDL_Rect,
     mouse_cursor: Vec2,
     left_mouse_button_down: bool,
-    anchor: Vec2,
-    k: f32,
-    rest_length: f32,
-    num: usize,
 }
 
 impl Application {
     pub fn new() -> Self {
-        let rect = SDL_Rect {
-            x: 0,
-            y: graphics::height() / 2,
-            w: graphics::width(),
-            h: graphics::height(),
-        };
-
-        let num = 10;
-
+        let circle = Body::new(200., 200., 1., Shape::Circle(4.));
         let mut application = Application {
             running: false,
             time_previous_frame: 0,
             particles: vec![],
             push_force: Vec2::new(0., 0.),
-            liquid: rect,
             mouse_cursor: Vec2::new(0., 0.),
             left_mouse_button_down: false,
-            anchor: Vec2::new(1440., 200.),
-            k: 200.,
-            num,
-            rest_length: 50.,
         };
-        for i in 0..num {
-            let p = Particle::new(1440., 200. + i as f32 * 100., 1., 4);
-            application.particles.push(p);
-        }
 
         application
     }
@@ -150,11 +128,10 @@ impl Application {
                             && event.button.button == SDL_BUTTON_LEFT as u8
                         {
                             self.left_mouse_button_down = false;
-                            let distance = self.particles[self.num - 1].pos - self.mouse_cursor;
+                            let distance = self.particles[0].pos - self.mouse_cursor;
                             let impulse_direction = distance.unit_vector();
                             let impulse_magnitude = distance.magnitude() * 5.0;
-                            self.particles[self.num - 1].vel =
-                                impulse_direction * impulse_magnitude;
+                            self.particles[0].vel = impulse_direction * impulse_magnitude;
                         }
                         break;
                     }
@@ -182,11 +159,6 @@ impl Application {
         let delta_time_ms = (sdl_ticks - self.time_previous_frame) as f32;
         let delta_time = f32::min(delta_time_ms / 1000., 0.016);
 
-        // let attraction =
-        //     generate_gravitational_force(&self.particles[0], &self.particles[1], 0.4, 5., 100.);
-        // self.particles[0].add_force(attraction);
-        // self.particles[1].add_force(-attraction);
-
         for particle in &mut self.particles {
             let drag = generate_drag_force(particle, 0.001);
             particle.add_force(drag);
@@ -198,21 +170,6 @@ impl Application {
 
             particle.integrate(delta_time);
             particle.clear_forces();
-        }
-
-        let spring_force =
-            generate_spring_force(&self.particles[0], self.anchor, self.rest_length, self.k);
-        self.particles[0].add_force(spring_force);
-
-        for i in 1..self.num {
-            let sf = generate_spring_force_particles(
-                &self.particles[i],
-                &self.particles[i - 1],
-                self.rest_length,
-                self.k,
-            );
-            self.particles[i].add_force(sf);
-            self.particles[i - 1].add_force(-sf);
         }
 
         let win_height = graphics::height() as f32;
@@ -253,40 +210,6 @@ impl Application {
                 0xFF0000FF,
             );
         }
-
-        graphics::draw_line(
-            self.anchor.x as i16,
-            self.anchor.y as i16,
-            self.particles[0].pos.x as i16,
-            self.particles[0].pos.y as i16,
-            0xFFFFFFFF,
-        );
-
-        for i in 0..(self.num - 1) {
-            graphics::draw_line(
-                self.particles[i].pos.x as i16,
-                self.particles[i].pos.y as i16,
-                self.particles[i + 1].pos.x as i16,
-                self.particles[i + 1].pos.y as i16,
-                0xFFFFFFFF,
-            );
-        }
-
-        graphics::draw_fill_circle(
-            self.anchor.x as i16,
-            self.anchor.y as i16,
-            5,
-            0.,
-            0xFFFFFFFF,
-        );
-
-        // graphics::draw_fill_rect(
-        //     (self.liquid.x + self.liquid.w / 2) as i16,
-        //     (self.liquid.y + self.liquid.h / 2) as i16,
-        //     self.liquid.w as i16,
-        //     self.liquid.h as i16,
-        //     0xFF6E3713,
-        // );
 
         for particle in &self.particles {
             graphics::draw_fill_circle(
