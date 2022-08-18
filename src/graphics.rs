@@ -117,16 +117,15 @@ pub fn draw_line(x0: i16, y0: i16, x1: i16, y1: i16, color: u32) {
 // I'm also going to cast angles to i16
 
 pub fn draw_circle(x: i16, y: i16, radius: i16, angle: f32, color: u32) {
+    // This was previously causing issues since I was casting angle.cos() to i16. This lost
+    // precision and roudned it down to zero. Doing the calculations with f32s fixes this.
+    let d_x = radius as f32 * angle.cos();
+    let d_y = radius as f32 * angle.sin();
+    let x2 = x as f32 + d_x;
+    let y2 = y as f32 + d_y;
     unsafe {
         circleColor(RENDERER, x, y, radius, color);
-        lineColor(
-            RENDERER,
-            x,
-            y,
-            x + angle.cos() as i16 * radius,
-            y + angle.sin() as i16 * radius,
-            color,
-        );
+        lineColor(RENDERER, x, y, x2 as i16, y2 as i16, color);
     }
 }
 pub fn draw_fill_circle(x: i16, y: i16, radius: i16, angle: f32, color: u32) {

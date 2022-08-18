@@ -24,12 +24,13 @@ pub struct Application {
     push_force: Vec2,
     mouse_cursor: Vec2,
     left_mouse_button_down: bool,
+    rotation: f32,
 }
 
 impl Application {
     pub fn new() -> Self {
-        let a = Body::new(200., 200., 1., Shape::Circle(4.));
-        let b = Body::new(600., 200., 3., Shape::Circle(20.));
+        let a = Body::new(200., 200., 1., Shape::Circle(40.));
+        let b = Body::new(600., 200., 3., Shape::Circle(80.));
         let mut application = Application {
             running: false,
             time_previous_frame: 0,
@@ -37,6 +38,7 @@ impl Application {
             push_force: Vec2::new(0., 0.),
             mouse_cursor: Vec2::new(0., 0.),
             left_mouse_button_down: false,
+            rotation: 0.,
         };
 
         application.bodies.push(a);
@@ -203,6 +205,13 @@ impl Application {
             }
         }
 
+        self.rotation += 0.1;
+        // if self.rotation == 0.0 {
+        //     self.rotation = 1.0
+        // } else {
+        //     self.rotation = 0.0
+        // }
+
         self.time_previous_frame = sdl_ticks;
     }
 
@@ -223,11 +232,11 @@ impl Application {
         for body in &self.bodies {
             match body.shape {
                 Shape::Circle(radius) => {
-                    graphics::draw_fill_circle(
+                    graphics::draw_circle(
                         body.pos.x as i16,
                         body.pos.y as i16,
                         radius as i16,
-                        0.,
+                        self.rotation,
                         0xFFFFFFFF,
                     );
                 }
