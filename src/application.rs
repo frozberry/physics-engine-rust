@@ -29,9 +29,9 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let a = Body::new(200., 200., 1., Shape::Circle(50.));
-        let b = Body::new(600., 200., 3., Shape::Circle(80.));
-        let c = Body::new(500., 500., 1., Shape::Box(100., 400.));
+        let a = Body::new(Shape::Circle(50.), 200., 200., 1.);
+        let b = Body::new(Shape::Circle(50.), 600., 200., 3.);
+        let c = Body::new(Shape::Box(100., 400.), 500., 500., 1.);
 
         let mut application = Application {
             running: false,

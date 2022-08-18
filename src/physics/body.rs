@@ -1,13 +1,15 @@
 use super::{shape::Shape, vec2::Vec2};
 
 pub struct Body {
+    pub shape: Shape,
+
     pub pos: Vec2,
     pub vel: Vec2,
     pub acc: Vec2,
     pub mass: f32,
     pub inv_mass: f32,
     pub net_force: Vec2,
-    pub shape: Shape,
+
     pub rotation: f32,
     pub ang_vel: f32,
     pub ang_acc: f32,
@@ -17,20 +19,19 @@ pub struct Body {
 }
 
 impl Body {
-    pub fn new(x: f32, y: f32, mass: f32, shape: Shape) -> Self {
-        let inv_mass = if mass > 0. { 1. / mass } else { 0. };
-
+    pub fn new(shape: Shape, x: f32, y: f32, mass: f32) -> Self {
         let inertia = shape.calc_inertia(mass);
         let inv_inertia = if inertia > 0. { 1. / inertia } else { 0. };
+        let inv_mass = if mass > 0. { 1. / mass } else { 0. };
 
         Body {
+            shape,
             pos: Vec2::new(x, y),
             vel: Vec2::new(0., 0.),
             acc: Vec2::new(0., 0.),
             mass,
             inv_mass,
             net_force: Vec2::new(0., 0.),
-            shape,
             rotation: 0.,
             ang_vel: 0.,
             ang_acc: 0.,
