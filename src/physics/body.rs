@@ -75,33 +75,6 @@ impl Body {
         self.net_torque += torque;
     }
 
-    pub fn get_local_verticies(&self) -> Option<Vec<Vec2>> {
-        match &self.shape {
-            Shape::Circle(_) => None,
-            Shape::Polygon(vertices) => Some(vertices.to_vec()),
-            Shape::Box(w, h) => {
-                let a = Vec2::new(-w / 2., -h / 2.);
-                let b = Vec2::new(w / 2., -h / 2.);
-                let c = Vec2::new(w / 2., h / 2.);
-                let d = Vec2::new(-w / 2., h / 2.);
-                Some(vec![a, b, c, d])
-            }
-        }
-    }
-    pub fn get_world_verticies(&self) -> Option<Vec<Vec2>> {
-        match &self.shape {
-            Shape::Circle(_) => None,
-            Shape::Polygon(vertices) => Some(vertices.to_vec()),
-            Shape::Box(_, _) => Some(
-                self.get_local_verticies()
-                    .unwrap()
-                    .iter()
-                    .map(|vertex| vertex.rotate(self.rotation) + self.pos)
-                    .collect(),
-            ),
-        }
-    }
-
     fn clear_forces(&mut self) {
         self.net_force.x = 0.;
         self.net_force.y = 0.;
