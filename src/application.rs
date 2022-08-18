@@ -58,6 +58,8 @@ impl Application {
         // Todo setup objects in scnee
     }
 
+    /* ---------------------------------- Input --------------------------------- */
+
     // This is not the best way to handle inputs in Rust
     // I am trying to replicate the original C++ code
     pub fn input(&mut self) {
@@ -148,6 +150,8 @@ impl Application {
         }
     }
 
+    /* --------------------------------- Update --------------------------------- */
+
     pub fn update(&mut self) {
         // Unsafe calls to SDL only
         unsafe {
@@ -211,6 +215,8 @@ impl Application {
 
         self.time_previous_frame = sdl_ticks;
     }
+
+    /* --------------------------------- Render --------------------------------- */
 
     pub fn render(&self) {
         graphics::clear_screen(0xFF056263);
