@@ -1,8 +1,7 @@
-use std::{cmp::min, mem::MaybeUninit};
+use std::mem::MaybeUninit;
 
 use sdl2::sys::{
-    SDL_Delay, SDL_Event, SDL_EventType, SDL_GetMouseState, SDL_GetTicks, SDL_KeyCode,
-    SDL_PollEvent, SDL_Rect, SDL_BUTTON_LEFT,
+    SDL_Delay, SDL_Event, SDL_GetMouseState, SDL_GetTicks, SDL_PollEvent, SDL_Rect, SDL_BUTTON_LEFT,
 };
 
 use crate::{

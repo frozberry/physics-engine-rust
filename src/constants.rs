@@ -1,4 +1,4 @@
-use sdl2::sys::{SDL_EventType, SDL_KeyCode, SDL_BUTTON_LEFT};
+use sdl2::sys::{SDL_EventType, SDL_KeyCode};
 
 pub const FPS: i32 = 60;
 pub const MILLISECS_PER_FRAME: i32 = 1000 / FPS;
