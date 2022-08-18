@@ -28,6 +28,7 @@ pub struct Application {
     anchor: Vec2,
     k: f32,
     rest_length: f32,
+    num: usize,
 }
 
 impl Application {
@@ -39,6 +40,8 @@ impl Application {
             h: graphics::height(),
         };
 
+        let num = 10;
+
         let mut application = Application {
             running: false,
             time_previous_frame: 0,
@@ -48,10 +51,11 @@ impl Application {
             mouse_cursor: Vec2::new(0., 0.),
             left_mouse_button_down: false,
             anchor: Vec2::new(1440., 200.),
-            k: 100.,
-            rest_length: 100.,
+            k: 200.,
+            num,
+            rest_length: 50.,
         };
-        for i in 0..6 {
+        for i in 0..num {
             let p = Particle::new(1440., 200. + i as f32 * 100., 1., 4);
             application.particles.push(p);
         }
@@ -146,10 +150,11 @@ impl Application {
                             && event.button.button == SDL_BUTTON_LEFT as u8
                         {
                             self.left_mouse_button_down = false;
-                            let distance = self.particles[0].pos - self.mouse_cursor;
+                            let distance = self.particles[self.num - 1].pos - self.mouse_cursor;
                             let impulse_direction = distance.unit_vector();
                             let impulse_magnitude = distance.magnitude() * 5.0;
-                            self.particles[0].vel = impulse_direction * impulse_magnitude;
+                            self.particles[self.num - 1].vel =
+                                impulse_direction * impulse_magnitude;
                         }
                         break;
                     }
@@ -199,14 +204,15 @@ impl Application {
             generate_spring_force(&self.particles[0], self.anchor, self.rest_length, self.k);
         self.particles[0].add_force(spring_force);
 
-        for i in 1..6 {
+        for i in 1..self.num {
             let sf = generate_spring_force_particles(
                 &self.particles[i],
                 &self.particles[i - 1],
-                5.,
+                self.rest_length,
                 self.k,
             );
             self.particles[i].add_force(sf);
+            self.particles[i - 1].add_force(-sf);
         }
 
         let win_height = graphics::height() as f32;
@@ -240,8 +246,8 @@ impl Application {
 
         if self.left_mouse_button_down {
             graphics::draw_line(
-                self.particles[0].pos.x as i16,
-                self.particles[0].pos.y as i16,
+                self.particles[self.num - 1].pos.x as i16,
+                self.particles[self.num - 1].pos.y as i16,
                 self.mouse_cursor.x as i16,
                 self.mouse_cursor.y as i16,
                 0xFF0000FF,
@@ -256,7 +262,7 @@ impl Application {
             0xFFFFFFFF,
         );
 
-        for i in 0..5 {
+        for i in 0..(self.num - 1) {
             graphics::draw_line(
                 self.particles[i].pos.x as i16,
                 self.particles[i].pos.y as i16,
