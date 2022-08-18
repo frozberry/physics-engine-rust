@@ -100,11 +100,14 @@ impl Application {
                         }
                         break;
                     }
-                    SDL_MOUSEMOTION => {
-                        self.mouse_cursor.x = event.motion.x as f32;
-                        self.mouse_cursor.y = event.motion.y as f32;
-                        break;
-                    }
+                    // This is really slow on WSL, I think because of X Server
+                    // SDL_MOUSEMOTION => {
+                    // if self.left_mouse_button_down {
+                    //     self.mouse_cursor.x = event.motion.x as f32;
+                    //     self.mouse_cursor.y = event.motion.y as f32;
+                    // }
+                    //     break;
+                    // }
                     SDL_MOUSEBUTTONDOWN => {
                         // Code for spawning particles
                         // if event.button.button == SDL_BUTTON_LEFT as u8 {
@@ -124,6 +127,7 @@ impl Application {
                             self.mouse_cursor.x = x as f32;
                             self.mouse_cursor.y = y as f32;
                         }
+
                         break;
                     }
                     SDL_MOUSEBUTTONUP => {
@@ -228,13 +232,13 @@ impl Application {
             );
         }
 
-        graphics::draw_fill_rect(
-            (self.liquid.x + self.liquid.w / 2) as i16,
-            (self.liquid.y + self.liquid.h / 2) as i16,
-            self.liquid.w as i16,
-            self.liquid.h as i16,
-            0xFF6E3713,
-        );
+        // graphics::draw_fill_rect(
+        //     (self.liquid.x + self.liquid.w / 2) as i16,
+        //     (self.liquid.y + self.liquid.h / 2) as i16,
+        //     self.liquid.w as i16,
+        //     self.liquid.h as i16,
+        //     0xFF6E3713,
+        // );
 
         for particle in &self.particles {
             graphics::draw_fill_circle(
