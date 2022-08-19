@@ -196,6 +196,15 @@ impl Application {
         for i in 0..self.bodies.len() {
             for j in (i + 1)..self.bodies.len() {
                 if i != j {
+                    let maybe_contact =
+                        collision::is_colliding(&mut self.bodies[i], &mut self.bodies[j]);
+                }
+            }
+        }
+
+        for i in 0..self.bodies.len() {
+            for j in (i + 1)..self.bodies.len() {
+                if i != j {
                     // This is required to get past the borrow checker. Rust doesn't allow two mutable
                     // references to the vec. So self.bodies is split into two slices with split_at_mut.
                     // See markdown for more explanation.
