@@ -196,30 +196,29 @@ impl Application {
         for i in 0..self.bodies.len() {
             for j in 0..self.bodies.len() {
                 if i != j {
-                    let contact = collision::is_colliding(&self.bodies[i], &self.bodies[j]);
-
-                    if let Some(c) = contact {
+                    let maybe_contact = collision::is_colliding(&self.bodies[i], &self.bodies[j]);
+                    if let Some(contact) = maybe_contact {
                         // self.bodies[i].is_colliding = true;
                         graphics::draw_fill_circle(
-                            c.start.x as i16,
-                            c.start.y as i16,
+                            contact.start.x as i16,
+                            contact.start.y as i16,
                             4.0 as i16,
                             0.,
                             0xFFFF00FF,
                         );
                         graphics::draw_fill_circle(
-                            c.end.x as i16,
-                            c.end.y as i16,
+                            contact.end.x as i16,
+                            contact.end.y as i16,
                             4.0 as i16,
                             0.,
                             0xFF00FF00,
                         );
 
                         graphics::draw_line(
-                            c.start.x as i16,
-                            c.start.y as i16,
-                            (c.start.x + c.normal.x * 20.) as i16,
-                            (c.start.y + c.normal.y * 20.) as i16,
+                            contact.start.x as i16,
+                            contact.start.y as i16,
+                            (contact.start.x + contact.normal.x * 20.) as i16,
+                            (contact.start.y + contact.normal.y * 20.) as i16,
                             0xFFFF00FF,
                         );
                     }
