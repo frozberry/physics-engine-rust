@@ -1,0 +1,95 @@
+# Returning Option<Contact> from Collision Checker 
+Returning an option very expressive way of describing a collision check function.
+
+In C++ is_colliding needs to return boolean to test agains the conditional. So it has to initialise an empty Contact and mutate it in place.
+```c++
+bool CollisionDetection::IsColliding(Body* a, Body* b, Contact& contact)
+```
+```c++
+Contact contact;
+if (CollisionDetection::IsColliding(a, b, contact)) {
+	ResolveContact(contact)
+}
+```
+
+`Option<Contact>` is much more natural. The option can be destructured and conditionally run with `if let`.
+```rust
+pub fn is_colliding(a: &mut Body, b: &mut Body) -> Option<Contact> 
+```
+``` rust
+let maybe_contact =	collision::is_colliding(&mut a, &mut b);
+if let Some(contact) = maybe_contact {
+	resolve_contact(contact)
+}
+```
+
+# Using Enum instead of Inheritance
+I enjoy using Enums to describe different variants more than the traditional OOP way. This is not a techincal judgement, it simply brings me joy to code this way.
+```rust
+pub enum Shape {
+    Circle(f32),
+    Polygon(Vec<Vec2>), 
+    Box(f32, f32),
+}
+
+struct Body {
+    pub shape: Shape,
+	...
+}
+```
+
+Shape specific can be moved out of body and implemented on the `Shape` enum.
+
+```rust
+impl Shape {
+    pub fn calc_inertia(&self, mass: f32) -> f32 {
+        match self {
+            Shape::Circle(radius) => circle_inertia(radius, mass),
+            Shape::Polygon(vertices) => polygon_inertia(vertices, mass),
+            Shape::Box(w, h) => box_inertia(w, h, mass),
+        }
+	}
+}
+```
+Rust's `match` is a pleasure to use. The compiler also enforces that all enum variants are considered. 
+
+A nested `match` for collision detection.
+
+```rust
+pub fn is_colliding(a: & Body, b: & Body) -> Option<Contact> {
+    match a.shape {
+        Shape::Circle(_) => match b.shape {
+            Shape::Circle(_) => is_collidng_circle_circle(a, b),
+            Shape::Polygon(_) => is_collidng_circle_polygon(a, b),
+            Shape::Box(_, _) => is_collidng_circle_box(a, b),
+        },
+        Shape::Polygon(_) => match b.shape {
+            Shape::Circle(_) => is_collidng_circle_polygon(a, b),
+            Shape::Polygon(_) => is_collidng_polygon_polygon(a, b),
+            Shape::Box(_, _) => is_collidng_polygon_box(a, b),
+        },
+        Shape::Box(_, _) => match b.shape {
+            Shape::Circle(_) => is_collidng_circle_box(a, b),
+            Shape::Polygon(_) => is_collidng_polygon_polygon(a, b),
+            Shape::Box(_, _) => is_collidng_polygon_box(a, b),
+        },
+    }
+}
+```
+It can be a bit overly verbose when the compiler is not able to verify that only a certain variant will be passed in. 
+```rust
+pub fn is_collidng_circle_circle(a: &Body, b: &Body) -> Option<Contact> {
+    match a.shape {
+        Shape::Circle(a_r) => match b.shape {
+            Shape::Circle(b_r) => {
+				// do stuff
+            }
+            _ => panic!("Non-circle passed into collision function"),
+        },
+        _ => panic!("Non-circle passed into collision function"),
+    }
+}
+```
+This `match` could be replaced with `if let Shape::Circle(r)`. But I like the robustness of writing the full match statements. This should catch bugs in development if we accidently have code that calls the function with the wrong arguments.
+
+
