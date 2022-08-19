@@ -6,15 +6,7 @@ mod graphics;
 mod physics;
 
 use application::Application;
-
-struct Foo {
-    bar: i32,
-}
-impl Foo {
-    fn my_method(&self) {
-        let var = self.bar;
-    }
-}
+use physics::{body::Body, contact::Contact, shape::Shape, vec2::Vec2};
 
 fn main() {
     let mut app = Application::new();

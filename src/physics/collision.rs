@@ -1,6 +1,6 @@
-use super::{body::Body, shape::Shape};
+use super::{body::Body, contact::Contact, shape::Shape, vec2::Vec2};
 
-pub fn is_colliding(a: &Body, b: &Body) -> bool {
+pub fn is_colliding<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
     match a.shape {
         Shape::Circle(_) => match b.shape {
             Shape::Circle(_) => is_collidng_circle_circle(a, b),
@@ -20,34 +20,48 @@ pub fn is_colliding(a: &Body, b: &Body) -> bool {
     }
 }
 
-pub fn is_collidng_circle_circle(a: &Body, b: &Body) -> bool {
-    let ab = a.pos - b.pos;
-    let radius_sum;
-
+pub fn is_collidng_circle_circle<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
+    let a_radius;
+    let b_radius;
     match a.shape {
         Shape::Circle(a_r) => match b.shape {
-            Shape::Circle(b_r) => radius_sum = a_r + b_r,
+            Shape::Circle(b_r) => {
+                a_radius = a_r;
+                b_radius = b_r;
+            }
             _ => panic!("Non circle passed into collision function"),
         },
         _ => panic!("Non circle passed into collision function"),
     }
 
-    // Equivlent to: radius_sum >= ab.magnitude()
-    (radius_sum * radius_sum) >= ab.magnitude_squared()
-}
+    let ab = b.pos - a.pos;
+    let radius_sum = a_radius + b_radius;
 
-pub fn is_collidng_circle_polygon(a: &Body, b: &Body) -> bool {
-    false
+    // Equivlent to: radius_sum >= ab.magnitude()
+    let collision_detected = (radius_sum * radius_sum) >= ab.magnitude_squared();
+
+    if collision_detected {
+        let normal = ab.unit_vector();
+        let start = b.pos - normal * b_radius;
+        let end = a.pos + normal * a_radius;
+        let depth = (end - start).magnitude();
+        Some(Contact::new(a, b, start, end, normal, depth))
+    } else {
+        None
+    }
 }
-pub fn is_collidng_circle_box(a: &Body, b: &Body) -> bool {
-    false
+pub fn is_collidng_circle_polygon<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
+    None
 }
-pub fn is_collidng_polygon_polygon(a: &Body, b: &Body) -> bool {
-    false
+pub fn is_collidng_circle_box<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
+    None
 }
-pub fn is_collidng_box_box(a: &Body, b: &Body) -> bool {
-    false
+pub fn is_collidng_polygon_polygon<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
+    None
 }
-pub fn is_collidng_polygon_box(a: &Body, b: &Body) -> bool {
-    false
+pub fn is_collidng_box_box<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
+    None
+}
+pub fn is_collidng_polygon_box<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
+    None
 }

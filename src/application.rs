@@ -32,12 +32,6 @@ impl Application {
     pub fn new() -> Self {
         let a = Body::new(Shape::Circle(50.), 200., 200., 1.);
         let b = Body::new(Shape::Circle(50.), 700., 200., 3.);
-        let b = Body::new(Shape::Circle(50.), 800., 200., 3.);
-        let c = Body::new(Shape::Circle(50.), 900., 200., 3.);
-        let d = Body::new(Shape::Circle(50.), 600., 200., 3.);
-        let e = Body::new(Shape::Circle(50.), 600., 400., 3.);
-        let f = Body::new(Shape::Circle(50.), 600., 260., 3.);
-        // let f = Body::new(Shape::Box(100., 400.), 500., 500., 1.);
 
         let mut application = Application {
             running: false,
@@ -50,10 +44,6 @@ impl Application {
 
         application.bodies.push(a);
         application.bodies.push(b);
-        application.bodies.push(c);
-        application.bodies.push(d);
-        application.bodies.push(e);
-        application.bodies.push(f);
         application
     }
 
@@ -201,8 +191,8 @@ impl Application {
         for i in 0..self.bodies.len() {
             for j in 0..self.bodies.len() {
                 if i != j {
-                    let is_colliding = collision::is_colliding(&self.bodies[i], &self.bodies[j]);
-                    if is_colliding {
+                    let contact = collision::is_colliding(&self.bodies[i], &self.bodies[j]);
+                    if contact.is_some() {
                         self.bodies[i].is_colliding = true;
                     }
                 }
