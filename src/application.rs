@@ -30,9 +30,7 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let a = Body::new(Shape::Circle(200.), 600., 500., 1.);
-        let b = Body::new(Shape::Circle(200.), 700., 500., 3.);
-        let c = Body::new(Shape::Circle(200.), 700., 500., 0.);
+        let a = Body::new(Shape::Circle(200.), 600., 500., 0.);
 
         let mut application = Application {
             running: false,
@@ -44,8 +42,6 @@ impl Application {
         };
 
         application.bodies.push(a);
-        application.bodies.push(b);
-        application.bodies.push(c);
         application
     }
 
@@ -117,38 +113,39 @@ impl Application {
                     // }
                     SDL_MOUSEBUTTONDOWN => {
                         // Code for spawning particles
-                        // if event.button.button == SDL_BUTTON_LEFT as u8 {
-                        //     let mut x = 1;
-                        //     let mut y = 1;
-                        //     SDL_GetMouseState(&mut x, &mut y);
-                        //     let p = Particle::new(x as f32, y as f32, 1.);
-                        //     self.particles.push(p);
-                        // }
-                        if !self.left_mouse_button_down
-                            && event.button.button == SDL_BUTTON_LEFT as u8
-                        {
-                            self.left_mouse_button_down = true;
+                        if event.button.button == SDL_BUTTON_LEFT as u8 {
                             let mut x = 1;
                             let mut y = 1;
                             SDL_GetMouseState(&mut x, &mut y);
-                            self.mouse_cursor.x = x as f32;
-                            self.mouse_cursor.y = y as f32;
+                            let mut p = Body::new(Shape::Circle(40.), x as f32, y as f32, 1.);
+                            p.restitution = 0.9;
+                            self.bodies.push(p);
                         }
+                        // if !self.left_mouse_button_down
+                        //     && event.button.button == SDL_BUTTON_LEFT as u8
+                        // {
+                        self.left_mouse_button_down = true;
+                        //     let mut x = 1;
+                        //     let mut y = 1;
+                        //     SDL_GetMouseState(&mut x, &mut y);
+                        //     self.mouse_cursor.x = x as f32;
+                        //     self.mouse_cursor.y = y as f32;
+                        // }
 
                         break;
                     }
-                    SDL_MOUSEBUTTONUP => {
-                        if self.left_mouse_button_down
-                            && event.button.button == SDL_BUTTON_LEFT as u8
-                        {
-                            self.left_mouse_button_down = false;
-                            let distance = self.bodies[0].pos - self.mouse_cursor;
-                            let impulse_direction = distance.unit_vector();
-                            let impulse_magnitude = distance.magnitude() * 5.0;
-                            self.bodies[0].vel = impulse_direction * impulse_magnitude;
-                        }
-                        break;
-                    }
+                    // SDL_MOUSEBUTTONUP => {
+                    //     if self.left_mouse_button_down
+                    //         && event.button.button == SDL_BUTTON_LEFT as u8
+                    //     {
+                    //         self.left_mouse_button_down = false;
+                    //         let distance = self.bodies[0].pos - self.mouse_cursor;
+                    //         let impulse_direction = distance.unit_vector();
+                    //         let impulse_magnitude = distance.magnitude() * 5.0;
+                    //         self.bodies[0].vel = impulse_direction * impulse_magnitude;
+                    //     }
+                    //     break;
+                    // }
                     _ => {}
                 }
             }
@@ -181,7 +178,7 @@ impl Application {
             body.add_force(drag);
 
             let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
-            // body.add_force(weight);
+            body.add_force(weight);
 
             body.add_force(self.push_force);
 
@@ -210,7 +207,7 @@ impl Application {
                     // references to bodies. I'm not sure if this is the must idiomatic Rust way.
 
                     if let Some(mut contact) = maybe_contact {
-                        contact.resolve_penetration();
+                        contact.resolve_collision();
 
                         graphics::draw_fill_circle(
                             contact.start.x as i16,

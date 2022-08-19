@@ -1,10 +1,11 @@
 use super::{shape::Shape, vec2::Vec2};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Body {
     pub shape: Shape,
     pub is_colliding: bool,
     pub is_static: bool,
+    pub restitution: f32,
 
     pub pos: Vec2,
     pub vel: Vec2,
@@ -34,6 +35,7 @@ impl Body {
             shape,
             is_colliding: false,
             is_static,
+            restitution: 1.0,
             pos: Vec2::new(x, y),
             vel: Vec2::new(0., 0.),
             acc: Vec2::new(0., 0.),
@@ -79,6 +81,13 @@ impl Body {
 
     pub fn add_torque(&mut self, torque: f32) {
         self.net_torque += torque;
+    }
+
+    pub fn apply_impulse(&mut self, impulse: Vec2) {
+        if self.is_static {
+            return;
+        }
+        self.vel += impulse * self.inv_mass;
     }
 
     fn clear_forces(&mut self) {

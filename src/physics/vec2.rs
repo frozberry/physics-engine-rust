@@ -113,7 +113,7 @@ impl ops::Mul<Vec2> for Vec2 {
     type Output = f32;
 
     fn mul(self, rhs: Vec2) -> Self::Output {
-        self.x * rhs.x + self.y + rhs.y
+        self.x * rhs.x + self.y * rhs.y
     }
 }
 
