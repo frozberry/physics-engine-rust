@@ -1,5 +1,6 @@
 use super::{shape::Shape, vec2::Vec2};
 
+#[derive(Clone)]
 pub struct Body {
     pub shape: Shape,
     pub is_colliding: bool,

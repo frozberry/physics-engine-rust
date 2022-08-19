@@ -1,5 +1,6 @@
 use super::vec2::Vec2;
 
+#[derive(Clone)]
 pub enum Shape {
     // Circle(radius)
     Circle(f32),

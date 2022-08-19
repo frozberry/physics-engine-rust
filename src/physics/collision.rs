@@ -1,6 +1,6 @@
 use super::{body::Body, contact::Contact, shape::Shape, vec2::Vec2};
 
-pub fn is_colliding<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
+pub fn is_colliding<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
     match a.shape {
         Shape::Circle(_) => match b.shape {
             Shape::Circle(_) => is_collidng_circle_circle(a, b),
@@ -20,7 +20,7 @@ pub fn is_colliding<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
     }
 }
 
-pub fn is_collidng_circle_circle<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
+pub fn is_collidng_circle_circle<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
     let a_radius;
     let b_radius;
     match a.shape {

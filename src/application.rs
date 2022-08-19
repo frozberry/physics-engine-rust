@@ -194,11 +194,22 @@ impl Application {
         }
 
         for i in 0..self.bodies.len() {
-            for j in 0..self.bodies.len() {
+            for j in (i + 1)..self.bodies.len() {
                 if i != j {
-                    let maybe_contact = collision::is_colliding(&self.bodies[i], &self.bodies[j]);
-                    if let Some(contact) = maybe_contact {
-                        // self.bodies[i].is_colliding = true;
+                    // This is required to get past the borrow checker. Rust doesn't allow two mutable
+                    // references to the vec. So self.bodies is split into two slices with split_at_mut.
+                    // See markdown for more explanation.
+                    let (left, right) = self.bodies.split_at_mut(i + 1);
+                    let maybe_contact =
+                        collision::is_colliding(&mut left[i], &mut right[j - i - 1]);
+
+                    // is_colliding doesn't mutate a and b directly. But they need to be passed as mutable
+                    // references since they will be used in instantiate a Contact class, which has mutable
+                    // references to bodies. I'm not sure if this is the must idiomatic Rust way.
+
+                    if let Some(mut contact) = maybe_contact {
+                        contact.resolve_penetration();
+
                         graphics::draw_fill_circle(
                             contact.start.x as i16,
                             contact.start.y as i16,
@@ -232,20 +243,20 @@ impl Application {
         for body in &mut self.bodies {
             match body.shape {
                 Shape::Circle(radius) => {
-                    if body.pos.y > win_height {
+                    if body.pos.y + radius > win_height {
                         body.pos.y = win_height - radius;
                         body.vel.y *= -0.9
                     }
-                    if body.pos.y < 0. {
+                    if body.pos.y - radius < 0. {
                         body.pos.y = radius;
                         body.vel.y *= -0.9
                     }
 
-                    if body.pos.x > win_width {
+                    if body.pos.x + radius > win_width {
                         body.pos.x = win_width - radius;
                         body.vel.x *= -0.9;
                     }
-                    if body.pos.x < 0. {
+                    if body.pos.x - radius < 0. {
                         body.pos.x = radius;
                         body.vel.x *= -0.9;
                     }
