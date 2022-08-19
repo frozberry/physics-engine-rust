@@ -30,8 +30,8 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let a = Body::new(Shape::Circle(50.), 200., 200., 1.);
-        let b = Body::new(Shape::Circle(50.), 700., 200., 3.);
+        let a = Body::new(Shape::Circle(200.), 600., 500., 1.);
+        let b = Body::new(Shape::Circle(200.), 700., 500., 3.);
 
         let mut application = Application {
             running: false,
@@ -83,10 +83,14 @@ impl Application {
                             SDLK_ESCAPE => {
                                 self.running = false;
                             }
-                            SDLK_UP => self.push_force.y = -50. * PIXELS_PER_METER,
-                            SDLK_DOWN => self.push_force.y = 50. * PIXELS_PER_METER,
-                            SDLK_LEFT => self.push_force.x = -50. * PIXELS_PER_METER,
-                            SDLK_RIGHT => self.push_force.x = 50. * PIXELS_PER_METER,
+                            // SDLK_UP => self.push_force.y = -50. * PIXELS_PER_METER,
+                            // SDLK_DOWN => self.push_force.y = 50. * PIXELS_PER_METER,
+                            // SDLK_LEFT => self.push_force.x = -50. * PIXELS_PER_METER,
+                            // SDLK_RIGHT => self.push_force.x = 50. * PIXELS_PER_METER,
+                            SDLK_UP => self.bodies[0].pos.y -= 10.,
+                            SDLK_DOWN => self.bodies[0].pos.y += 10.,
+                            SDLK_LEFT => self.bodies[0].pos.x -= 10.,
+                            SDLK_RIGHT => self.bodies[0].pos.x += 10.,
                             _ => {}
                         }
                         break;
@@ -103,10 +107,10 @@ impl Application {
                     }
                     // This is really slow on WSL, I think because of X Server
                     // SDL_MOUSEMOTION => {
-                    // if self.left_mouse_button_down {
-                    //     self.mouse_cursor.x = event.motion.x as f32;
-                    //     self.mouse_cursor.y = event.motion.y as f32;
-                    // }
+                    //     if self.left_mouse_button_down {
+                    //         // self.mouse_cursor.x = event.motion.x as f32;
+                    //         // self.mouse_cursor.y = event.motion.y as f32;
+                    //     }
                     //     break;
                     // }
                     SDL_MOUSEBUTTONDOWN => {
@@ -152,6 +156,7 @@ impl Application {
     /* --------------------------------- Update --------------------------------- */
 
     pub fn update(&mut self) {
+        graphics::clear_screen(0xFF056263);
         // Unsafe calls to SDL only
         unsafe {
             let time_since_last_frame = SDL_GetTicks() - self.time_previous_frame;
@@ -174,12 +179,12 @@ impl Application {
             body.add_force(drag);
 
             let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
-            body.add_force(weight);
+            // body.add_force(weight);
 
             body.add_force(self.push_force);
 
             let torque = 200.;
-            body.add_torque(torque);
+            // body.add_torque(torque);
 
             body.update(delta_time);
         }
@@ -192,8 +197,31 @@ impl Application {
             for j in 0..self.bodies.len() {
                 if i != j {
                     let contact = collision::is_colliding(&self.bodies[i], &self.bodies[j]);
-                    if contact.is_some() {
-                        self.bodies[i].is_colliding = true;
+
+                    if let Some(c) = contact {
+                        // self.bodies[i].is_colliding = true;
+                        graphics::draw_fill_circle(
+                            c.start.x as i16,
+                            c.start.y as i16,
+                            4.0 as i16,
+                            0.,
+                            0xFFFF00FF,
+                        );
+                        graphics::draw_fill_circle(
+                            c.end.x as i16,
+                            c.end.y as i16,
+                            4.0 as i16,
+                            0.,
+                            0xFF00FF00,
+                        );
+
+                        graphics::draw_line(
+                            c.start.x as i16,
+                            c.start.y as i16,
+                            (c.start.x + c.normal.x * 20.) as i16,
+                            (c.start.y + c.normal.y * 20.) as i16,
+                            0xFFFF00FF,
+                        );
                     }
                 }
             }
@@ -233,8 +261,6 @@ impl Application {
     /* --------------------------------- Render --------------------------------- */
 
     pub fn render(&self) {
-        graphics::clear_screen(0xFF056263);
-
         if self.left_mouse_button_down {
             graphics::draw_line(
                 self.bodies[0].pos.x as i16,
