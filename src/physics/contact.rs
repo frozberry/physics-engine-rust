@@ -28,6 +28,10 @@ impl<'a> Contact<'a> {
         }
     }
     pub fn resolve_penetration(&mut self) {
+        if self.a.is_static && self.b.is_static {
+            return;
+        }
+
         self.a.is_colliding = true;
         self.b.is_colliding = true;
         let da: f32 = self.depth / (self.a.inv_mass + self.b.inv_mass) * self.a.inv_mass;

@@ -4,6 +4,7 @@ use super::{shape::Shape, vec2::Vec2};
 pub struct Body {
     pub shape: Shape,
     pub is_colliding: bool,
+    pub is_static: bool,
 
     pub pos: Vec2,
     pub vel: Vec2,
@@ -24,11 +25,15 @@ impl Body {
     pub fn new(shape: Shape, x: f32, y: f32, mass: f32) -> Self {
         let inertia = shape.calc_inertia(mass);
         let inv_inertia = if inertia > 0. { 1. / inertia } else { 0. };
-        let inv_mass = if mass > 0. { 1. / mass } else { 0. };
+        let inv_mass = if mass != 0. { 1. / mass } else { 0. };
+
+        let epsilon = 0.00005;
+        let is_static = inv_mass < epsilon;
 
         Body {
             shape,
             is_colliding: false,
+            is_static,
             pos: Vec2::new(x, y),
             vel: Vec2::new(0., 0.),
             acc: Vec2::new(0., 0.),
@@ -45,6 +50,9 @@ impl Body {
     }
 
     pub fn update(&mut self, dt: f32) {
+        if self.is_static {
+            return;
+        }
         self.integrate_linear(dt);
         self.integrate_angular(dt);
     }

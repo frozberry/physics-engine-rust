@@ -32,6 +32,7 @@ impl Application {
     pub fn new() -> Self {
         let a = Body::new(Shape::Circle(200.), 600., 500., 1.);
         let b = Body::new(Shape::Circle(200.), 700., 500., 3.);
+        let c = Body::new(Shape::Circle(200.), 700., 500., 0.);
 
         let mut application = Application {
             running: false,
@@ -44,6 +45,7 @@ impl Application {
 
         application.bodies.push(a);
         application.bodies.push(b);
+        application.bodies.push(c);
         application
     }
 
