@@ -2,6 +2,7 @@ use super::{shape::Shape, vec2::Vec2};
 
 pub struct Body {
     pub shape: Shape,
+    pub is_colliding: bool,
 
     pub pos: Vec2,
     pub vel: Vec2,
@@ -26,6 +27,7 @@ impl Body {
 
         Body {
             shape,
+            is_colliding: false,
             pos: Vec2::new(x, y),
             vel: Vec2::new(0., 0.),
             acc: Vec2::new(0., 0.),

@@ -7,6 +7,15 @@ mod physics;
 
 use application::Application;
 
+struct Foo {
+    bar: i32,
+}
+impl Foo {
+    fn my_method(&self) {
+        let var = self.bar;
+    }
+}
+
 fn main() {
     let mut app = Application::new();
     app.setup();
