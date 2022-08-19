@@ -94,8 +94,7 @@ This `match` could be replaced with `if let Shape::Circle(r)`. But I like the ro
 
 
 # Borrow Checker Problems
-
-Originally I wanted to
+For resolving collisions, I originally  I wanted to:
 ```rust
 for i in 0..self.bodies.len() {
 	for j in (i + 1)..self.bodies.len() {
@@ -106,6 +105,8 @@ for i in 0..self.bodies.len() {
 	}
 }
 ```
+`is_colliding()` needs mutable references to the bodies, since they will be used to instantiate a `Contact` struct, which needs to mutate the bodies position.
+
 But the borrow checker does not like this.
 ```
 error[E0499]: cannot borrow `self.bodies` as mutable more than once at a time
