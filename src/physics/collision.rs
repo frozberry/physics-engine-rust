@@ -1,3 +1,7 @@
+use core::panic;
+
+use crate::graphics;
+
 use super::{body::Body, contact::Contact, shape::Shape, vec2::Vec2};
 
 pub fn is_colliding<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
@@ -8,14 +12,14 @@ pub fn is_colliding<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>>
             Shape::Box(_, _) => is_collidng_circle_polygon(a, b),
         },
         Shape::Polygon(_) => match b.shape {
-            Shape::Circle(_) => is_collidng_circle_polygon(a, b),
+            Shape::Circle(_) => is_collidng_circle_polygon(b, a),
             Shape::Polygon(_) => is_collidng_polygon_polygon(a, b),
-            Shape::Box(_, _) => is_collidng_polygon_polygon(a, b),
+            Shape::Box(_, _) => is_collidng_polygon_polygon(b, a),
         },
         Shape::Box(_, _) => match b.shape {
-            Shape::Circle(_) => is_collidng_circle_polygon(a, b),
+            Shape::Circle(_) => is_collidng_circle_polygon(b, a),
             Shape::Polygon(_) => is_collidng_polygon_polygon(a, b),
-            Shape::Box(_, _) => is_collidng_polygon_polygon(a, b),
+            Shape::Box(_, _) => is_collidng_polygon_polygon(b, a),
         },
     }
 }
@@ -81,10 +85,6 @@ pub fn is_collidng_polygon_polygon<'a>(a: &'a mut Body, b: &'a mut Body) -> Opti
     }
 }
 
-pub fn is_collidng_circle_polygon<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
-    None
-}
-
 fn find_min_separation<'a>(a: &'a Body, b: &'a Body) -> (f32, Vec2, Vec2) {
     let a_vertices = a.shape.get_world_verticies(a.rotation, a.pos);
     let b_vertices = b.shape.get_world_verticies(b.rotation, b.pos);
@@ -115,4 +115,72 @@ fn find_min_separation<'a>(a: &'a Body, b: &'a Body) -> (f32, Vec2, Vec2) {
         }
     }
     (separation, axis, point)
+}
+
+pub fn is_collidng_circle_polygon<'a>(
+    circle: &'a mut Body,
+    polygon: &'a mut Body,
+) -> Option<Contact<'a>> {
+    // match circle.shape {
+    //     Shape::Circle(_) => match polygon.shape {
+    //         Shape::Circle(_) => panic!("Incorrect shape"),
+    //         Shape::Polygon(_) => todo!(),
+    //         Shape::Box(_, _) => todo!(),
+    //     },
+    //     _ => panic!("Incorrect shape"),
+    // }
+
+    // TODO writeup this design choice that enum needs to panic
+    if let Shape::Circle(_) = polygon.shape {
+        panic!("Incorrect shape");
+    }
+    if let Shape::Box(_, _) = circle.shape {
+        panic!("Incorrect shape");
+    }
+    if let Shape::Polygon(_) = circle.shape {
+        panic!("Incorrect shape");
+    }
+
+    let verticies = polygon
+        .shape
+        .get_world_verticies(polygon.rotation, polygon.pos);
+
+    let mut max_projection = f32::MIN;
+    let mut min_curr_vertex = Vec2::new(0., 0.);
+    let mut min_next_vertex = Vec2::new(0., 0.);
+
+    for i in 0..verticies.len() {
+        let current_vertex = i;
+        let next_vertex = (i + 1) % verticies.len();
+        // TODO writeup this design choice to pass in pos and rot
+        let edge = polygon
+            .shape
+            .edge_at(current_vertex, polygon.rotation, polygon.pos);
+
+        let normal = edge.normal();
+
+        let circle_center = circle.pos - verticies[current_vertex];
+        let projection = circle_center.dot(normal);
+        if projection > max_projection {
+            max_projection = projection;
+            min_curr_vertex = verticies[current_vertex];
+            min_next_vertex = verticies[next_vertex];
+        }
+    }
+
+    graphics::draw_fill_circle(
+        min_curr_vertex.x as i16,
+        min_curr_vertex.y as i16,
+        5,
+        0.,
+        0xFFFFFFFF,
+    );
+    graphics::draw_fill_circle(
+        min_next_vertex.x as i16,
+        min_next_vertex.y as i16,
+        5,
+        0.,
+        0xFFFFFFFF,
+    );
+    None
 }

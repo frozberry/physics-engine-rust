@@ -30,11 +30,10 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 0.);
+        let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 1.);
         a.restitution = 0.2;
-        let mut b = Body::new(Shape::Box(5000., 100.), 1700., 1200., 0.);
+        let mut b = Body::new(Shape::Circle(100.), 1700., 1200., 1.);
         b.restitution = 0.2;
-        // let mut b = Body::new(Shape::Box(200., 200.), 600., 500., 1.);
 
         let mut application = Application {
             running: false,
@@ -45,8 +44,8 @@ impl Application {
             left_mouse_button_down: false,
         };
 
-        application.bodies.push(a);
         application.bodies.push(b);
+        application.bodies.push(a);
         application
     }
 
@@ -90,10 +89,10 @@ impl Application {
                             // SDLK_DOWN => self.push_force.y = 50. * PIXELS_PER_METER,
                             // SDLK_LEFT => self.push_force.x = -50. * PIXELS_PER_METER,
                             // SDLK_RIGHT => self.push_force.x = 50. * PIXELS_PER_METER,
-                            SDLK_UP => self.bodies[0].pos.y -= 10.,
-                            SDLK_DOWN => self.bodies[0].pos.y += 10.,
-                            SDLK_LEFT => self.bodies[0].pos.x -= 10.,
-                            SDLK_RIGHT => self.bodies[0].pos.x += 10.,
+                            SDLK_UP => self.bodies[0].pos.y -= 50.,
+                            SDLK_DOWN => self.bodies[0].pos.y += 50.,
+                            SDLK_LEFT => self.bodies[0].pos.x -= 50.,
+                            SDLK_RIGHT => self.bodies[0].pos.x += 50.,
                             _ => {}
                         }
                         break;
@@ -185,7 +184,7 @@ impl Application {
             // body.add_force(drag);
 
             let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
-            body.add_force(weight);
+            // body.add_force(weight);
 
             body.add_force(self.push_force);
 
