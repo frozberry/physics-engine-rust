@@ -306,9 +306,7 @@ impl Application {
                 Shape::Box(_, _) => graphics::draw_polygon(
                     body.pos.x as i16,
                     body.pos.y as i16,
-                    body.shape
-                        .get_world_verticies(body.rotation, body.pos)
-                        .unwrap(),
+                    body.shape.get_world_verticies(body.rotation, body.pos),
                     color,
                 ),
                 _ => {}

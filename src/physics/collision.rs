@@ -5,17 +5,17 @@ pub fn is_colliding<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>>
         Shape::Circle(_) => match b.shape {
             Shape::Circle(_) => is_collidng_circle_circle(a, b),
             Shape::Polygon(_) => is_collidng_circle_polygon(a, b),
-            Shape::Box(_, _) => is_collidng_circle_box(a, b),
+            Shape::Box(_, _) => is_collidng_circle_polygon(a, b),
         },
         Shape::Polygon(_) => match b.shape {
             Shape::Circle(_) => is_collidng_circle_polygon(a, b),
             Shape::Polygon(_) => is_collidng_polygon_polygon(a, b),
-            Shape::Box(_, _) => is_collidng_polygon_box(a, b),
+            Shape::Box(_, _) => is_collidng_polygon_polygon(a, b),
         },
         Shape::Box(_, _) => match b.shape {
-            Shape::Circle(_) => is_collidng_circle_box(a, b),
-            Shape::Polygon(_) => is_collidng_polygon_box(a, b),
-            Shape::Box(_, _) => is_collidng_box_box(a, b),
+            Shape::Circle(_) => is_collidng_circle_polygon(a, b),
+            Shape::Polygon(_) => is_collidng_polygon_polygon(a, b),
+            Shape::Box(_, _) => is_collidng_polygon_polygon(a, b),
         },
     }
 }
@@ -51,16 +51,14 @@ pub fn is_collidng_circle_circle<'a>(a: &'a mut Body, b: &'a mut Body) -> Option
     }
 }
 
-pub fn is_collidng_circle_polygon<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
-    None
-}
-pub fn is_collidng_circle_box<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
-    None
-}
-pub fn is_collidng_polygon_polygon<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
-    None
-}
-pub fn is_collidng_box_box<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
+pub fn is_collidng_polygon_polygon<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
+    if let Shape::Circle(_) = a.shape {
+        panic!("Wrong collision function called")
+    }
+    if let Shape::Circle(_) = b.shape {
+        panic!("Wrong collision function called")
+    }
+
     let ab = find_min_separation(a, b);
     let ba = find_min_separation(b, a);
 
@@ -74,13 +72,14 @@ pub fn is_collidng_box_box<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Conta
 
     Some(contact)
 }
-pub fn is_collidng_polygon_box<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
+
+pub fn is_collidng_circle_polygon<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
     None
 }
 
 fn find_min_separation<'a>(a: &'a Body, b: &'a Body) -> f32 {
-    let av = a.shape.get_world_verticies(a.rotation, a.pos).unwrap();
-    let bv = a.shape.get_world_verticies(b.rotation, b.pos).unwrap();
+    let av = a.shape.get_world_verticies(a.rotation, a.pos);
+    let bv = a.shape.get_world_verticies(b.rotation, b.pos);
 
     let mut separation = f32::MIN;
 
