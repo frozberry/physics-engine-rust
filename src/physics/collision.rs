@@ -61,6 +61,7 @@ pub fn is_collidng_polygon_polygon<'a>(a: &'a mut Body, b: &'a mut Body) -> Opti
 
     let (ab_seperation, a_axis, a_point) = find_min_separation(a, b);
     let (ba_seperation, b_axis, b_point) = find_min_separation(b, a);
+    println!("{ab_seperation} {ba_seperation}");
 
     if ab_seperation >= 0. || ba_seperation >= 0. {
         return None;

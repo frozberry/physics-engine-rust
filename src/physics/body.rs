@@ -83,11 +83,12 @@ impl Body {
         self.net_torque += torque;
     }
 
-    pub fn apply_impulse(&mut self, impulse: Vec2) {
+    pub fn apply_impulse(&mut self, impulse: Vec2, r: Vec2) {
         if self.is_static {
             return;
         }
         self.vel += impulse * self.inv_mass;
+        self.ang_vel += r.cross(impulse) * self.inv_inertia;
     }
 
     fn clear_forces(&mut self) {
