@@ -42,7 +42,8 @@ impl Shape {
     }
 
     pub fn get_world_verticies(&self, rotation: f32, pos: Vec2) -> Vec<Vec2> {
-        let local_to_world = || {
+        // get_world is a closure that calculates the world verticies for Box and Polygon
+        let get_world = || {
             self.get_local_verticies()
                 .iter()
                 .map(|vertex| vertex.rotate(rotation) + pos)
@@ -51,8 +52,8 @@ impl Shape {
 
         match self {
             Shape::Circle(_) => panic!("Circle has no vertices"),
-            Shape::Polygon(_) => local_to_world(),
-            Shape::Box(_, _) => local_to_world(),
+            Shape::Polygon(_) => get_world(),
+            Shape::Box(_, _) => get_world(),
         }
     }
 
