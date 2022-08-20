@@ -14,8 +14,8 @@ pub fn is_colliding<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>>
         },
         Shape::Box(_, _) => match b.shape {
             Shape::Circle(_) => is_collidng_circle_box(a, b),
-            Shape::Polygon(_) => is_collidng_polygon_polygon(a, b),
-            Shape::Box(_, _) => is_collidng_polygon_box(a, b),
+            Shape::Polygon(_) => is_collidng_polygon_box(a, b),
+            Shape::Box(_, _) => is_collidng_box_box(a, b),
         },
     }
 }
@@ -50,7 +50,8 @@ pub fn is_collidng_circle_circle<'a>(a: &'a mut Body, b: &'a mut Body) -> Option
         None
     }
 }
-pub fn is_collidng_circle_polygon<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
+
+pub fn is_collidng_circle_polygon<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
     None
 }
 pub fn is_collidng_circle_box<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
@@ -59,9 +60,40 @@ pub fn is_collidng_circle_box<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a
 pub fn is_collidng_polygon_polygon<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
     None
 }
-pub fn is_collidng_box_box<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
-    None
+pub fn is_collidng_box_box<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
+    let ab = find_min_separation(a, b);
+    let ba = find_min_separation(b, a);
+
+    if ab >= 0. || ba >= 0. {
+        return None;
+    }
+
+    // Temporary placeholder contact
+    let v = Vec2::new(0., 0.);
+    let contact = Contact::new(a, b, v, v, v, 0.);
+
+    Some(contact)
 }
 pub fn is_collidng_polygon_box<'a>(a: &'a Body, b: &'a Body) -> Option<Contact<'a>> {
     None
+}
+
+fn find_min_separation<'a>(a: &'a Body, b: &'a Body) -> f32 {
+    let av = a.shape.get_world_verticies(a.rotation, a.pos).unwrap();
+    let bv = a.shape.get_world_verticies(b.rotation, b.pos).unwrap();
+
+    let mut separation = f32::MIN;
+
+    for i in 0..av.len() {
+        let va = av[i];
+        let normal = a.shape.edge_at(i, a.rotation, a.pos).normal();
+
+        let mut min_sep = f32::MAX;
+        for j in 0..bv.len() {
+            let vb = bv[j];
+            min_sep = min_sep.min((vb - va).dot(normal));
+        }
+        separation = separation.max(min_sep)
+    }
+    separation
 }

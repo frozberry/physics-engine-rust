@@ -36,24 +36,24 @@ impl<'a> Contact<'a> {
 
         self.a.is_colliding = true;
         self.b.is_colliding = true;
-        let da: f32 = self.depth / (self.a.inv_mass + self.b.inv_mass) * self.a.inv_mass;
-        let db: f32 = self.depth / (self.a.inv_mass + self.b.inv_mass) * self.b.inv_mass;
-        self.a.pos -= self.normal * da;
-        self.b.pos += self.normal * db;
+        // let da: f32 = self.depth / (self.a.inv_mass + self.b.inv_mass) * self.a.inv_mass;
+        // let db: f32 = self.depth / (self.a.inv_mass + self.b.inv_mass) * self.b.inv_mass;
+        // self.a.pos -= self.normal * da;
+        // self.b.pos += self.normal * db;
     }
 
     pub fn resolve_collision(&mut self) {
         self.resolve_penetration();
 
-        let e = f32::min(self.a.restitution, self.b.restitution);
-        let v_rel = self.a.vel - self.b.vel;
-        let v_rel_dot_normal = v_rel.dot(self.normal);
+        // let e = f32::min(self.a.restitution, self.b.restitution);
+        // let v_rel = self.a.vel - self.b.vel;
+        // let v_rel_dot_normal = v_rel.dot(self.normal);
 
-        let impulse_magnitude = -(1. + e) * v_rel_dot_normal / (self.a.inv_mass + self.b.inv_mass);
-        let impulse_direction = self.normal;
-        let jn = impulse_direction * impulse_magnitude;
+        // let impulse_magnitude = -(1. + e) * v_rel_dot_normal / (self.a.inv_mass + self.b.inv_mass);
+        // let impulse_direction = self.normal;
+        // let jn = impulse_direction * impulse_magnitude;
 
-        self.a.apply_impulse(jn);
-        self.b.apply_impulse(-jn);
+        // self.a.apply_impulse(jn);
+        // self.b.apply_impulse(-jn);
     }
 }

@@ -30,7 +30,10 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let a = Body::new(Shape::Circle(200.), 600., 500., 0.);
+        let mut a = Body::new(Shape::Box(200., 200.), 600., 500., 1.);
+        let mut b = Body::new(Shape::Box(200., 200.), 600., 500., 1.);
+        a.ang_vel = 0.4;
+        b.ang_vel = 0.1;
 
         let mut application = Application {
             running: false,
@@ -42,6 +45,7 @@ impl Application {
         };
 
         application.bodies.push(a);
+        application.bodies.push(b);
         application
     }
 
@@ -113,18 +117,20 @@ impl Application {
                     // }
                     SDL_MOUSEBUTTONDOWN => {
                         // Code for spawning particles
-                        if event.button.button == SDL_BUTTON_LEFT as u8 {
-                            let mut x = 1;
-                            let mut y = 1;
-                            SDL_GetMouseState(&mut x, &mut y);
-                            let mut p = Body::new(Shape::Circle(40.), x as f32, y as f32, 1.);
-                            p.restitution = 0.9;
-                            self.bodies.push(p);
-                        }
+                        // if event.button.button == SDL_BUTTON_LEFT as u8 {
+                        //     let mut x = 1;
+                        //     let mut y = 1;
+                        //     SDL_GetMouseState(&mut x, &mut y);
+                        //     let mut p = Body::new(Shape::Circle(40.), x as f32, y as f32, 1.);
+                        //     p.restitution = 0.9;
+                        //     self.bodies.push(p);
+                        // }
+
+                        // Code for pool effect
                         // if !self.left_mouse_button_down
                         //     && event.button.button == SDL_BUTTON_LEFT as u8
                         // {
-                        self.left_mouse_button_down = true;
+                        // self.left_mouse_button_down = true;
                         //     let mut x = 1;
                         //     let mut y = 1;
                         //     SDL_GetMouseState(&mut x, &mut y);
@@ -175,10 +181,10 @@ impl Application {
 
         for body in &mut self.bodies {
             let drag = generate_drag_force(body, 0.001);
-            body.add_force(drag);
+            // body.add_force(drag);
 
             let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
-            body.add_force(weight);
+            // body.add_force(weight);
 
             body.add_force(self.push_force);
 

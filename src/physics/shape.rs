@@ -50,4 +50,23 @@ impl Shape {
             ),
         }
     }
+
+    pub fn edge_at(&self, index: usize, rotation: f32, pos: Vec2) -> Vec2 {
+        match self {
+            Shape::Circle(_) => {
+                panic!("Edge at called with Circle shape")
+            }
+            Shape::Polygon(vertices) => {
+                let current_i = index;
+                let next_i = (index + 1) % vertices.len();
+                vertices[next_i] - vertices[current_i]
+            }
+            Shape::Box(_, _) => {
+                let vertices = self.get_world_verticies(rotation, pos).unwrap();
+                let current_i = index;
+                let next_i = (index + 1) % vertices.len();
+                vertices[next_i] - vertices[current_i]
+            }
+        }
+    }
 }
