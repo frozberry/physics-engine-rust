@@ -61,7 +61,6 @@ pub fn is_collidng_polygon_polygon<'a>(a: &'a mut Body, b: &'a mut Body) -> Opti
 
     let (ab_seperation, a_axis, a_point) = find_min_separation(a, b);
     let (ba_seperation, b_axis, b_point) = find_min_separation(b, a);
-    println!("{ab_seperation} {ba_seperation}");
 
     if ab_seperation >= 0. || ba_seperation >= 0. {
         return None;
@@ -88,7 +87,7 @@ pub fn is_collidng_circle_polygon<'a>(a: &'a mut Body, b: &'a mut Body) -> Optio
 
 fn find_min_separation<'a>(a: &'a Body, b: &'a Body) -> (f32, Vec2, Vec2) {
     let a_vertices = a.shape.get_world_verticies(a.rotation, a.pos);
-    let b_vertices = a.shape.get_world_verticies(b.rotation, b.pos);
+    let b_vertices = b.shape.get_world_verticies(b.rotation, b.pos);
 
     let mut separation = f32::MIN;
     let mut axis = Vec2::new(0., 0.);
@@ -115,6 +114,5 @@ fn find_min_separation<'a>(a: &'a Body, b: &'a Body) -> (f32, Vec2, Vec2) {
             point = min_vertex;
         }
     }
-    let v = Vec2::new(0., 0.);
     (separation, axis, point)
 }

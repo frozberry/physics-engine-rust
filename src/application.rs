@@ -31,6 +31,9 @@ pub struct Application {
 impl Application {
     pub fn new() -> Self {
         let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 0.);
+        a.restitution = 0.2;
+        let mut b = Body::new(Shape::Box(5000., 100.), 1700., 1200., 0.);
+        b.restitution = 0.2;
         // let mut b = Body::new(Shape::Box(200., 200.), 600., 500., 1.);
 
         let mut application = Application {
@@ -43,6 +46,7 @@ impl Application {
         };
 
         application.bodies.push(a);
+        application.bodies.push(b);
         application
     }
 
@@ -118,8 +122,8 @@ impl Application {
                             let mut x = 1;
                             let mut y = 1;
                             SDL_GetMouseState(&mut x, &mut y);
-                            let mut p = Body::new(Shape::Box(40., 40.), x as f32, y as f32, 1.);
-                            p.restitution = 0.9;
+                            let mut p = Body::new(Shape::Box(100., 100.), x as f32, y as f32, 1.);
+                            p.restitution = 0.2;
                             self.bodies.push(p);
                         }
 
@@ -181,7 +185,7 @@ impl Application {
             // body.add_force(drag);
 
             let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
-            // body.add_force(weight);
+            body.add_force(weight);
 
             body.add_force(self.push_force);
 
@@ -230,8 +234,8 @@ impl Application {
                         graphics::draw_line(
                             contact.start.x as i16,
                             contact.start.y as i16,
-                            (contact.start.x + contact.normal.x * 20.) as i16,
-                            (contact.start.y + contact.normal.y * 20.) as i16,
+                            (contact.start.x + contact.normal.x * 200.) as i16,
+                            (contact.start.y + contact.normal.y * 200.) as i16,
                             0xFFFF00FF,
                         );
                     }

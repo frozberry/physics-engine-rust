@@ -6,6 +6,7 @@ pub struct Body {
     pub is_colliding: bool,
     pub is_static: bool,
     pub restitution: f32,
+    pub friction: f32,
 
     pub pos: Vec2,
     pub vel: Vec2,
@@ -36,6 +37,7 @@ impl Body {
             is_colliding: false,
             is_static,
             restitution: 1.0,
+            friction: 0.7,
             pos: Vec2::new(x, y),
             vel: Vec2::new(0., 0.),
             acc: Vec2::new(0., 0.),

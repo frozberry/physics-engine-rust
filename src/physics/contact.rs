@@ -46,32 +46,35 @@ impl<'a> Contact<'a> {
         self.resolve_penetration();
 
         let e = f32::min(self.a.restitution, self.b.restitution);
+        let f = f32::min(self.a.friction, self.b.friction);
 
         // Calculate the relavtive velocity between the bodies
         let ra = self.end - self.a.pos;
         let rb = self.start - self.b.pos;
-        let va = self.a.vel + Vec2::new(self.a.ang_vel * ra.y, self.a.ang_vel * ra.x);
-        let vb = self.b.vel + Vec2::new(self.b.ang_vel * ra.y, self.b.ang_vel * rb.x);
+        let va = self.a.vel + Vec2::new(-self.a.ang_vel * ra.y, self.a.ang_vel * ra.x);
+        let vb = self.b.vel + Vec2::new(-self.b.ang_vel * rb.y, self.b.ang_vel * rb.x);
         let v_rel = va - vb;
 
         // Relative velocity along the collision normal
         let v_rel_dot_normal = v_rel.dot(self.normal);
+        let impulse_direction_n = self.normal;
         let impulse_magnitude_n = -(1. + e) * v_rel_dot_normal
             / ((self.a.inv_mass + self.b.inv_mass)
                 + ra.cross(self.normal) * ra.cross(self.normal) * self.a.inv_inertia
                 + rb.cross(self.normal) * rb.cross(self.normal) * self.b.inv_inertia);
-        let jn = self.normal * impulse_magnitude_n;
+        let jn = impulse_direction_n * impulse_magnitude_n;
 
         // Relative velocity along the collision tangent
         let tangent = self.normal.normal();
         let v_rel_dot_tangent = v_rel.dot(tangent);
-        let impulse_magnitude_t = -(1. + e) * v_rel_dot_tangent
+        let impulse_direction_t = tangent;
+        let impulse_magnitude_t = f * -(1. + e) * v_rel_dot_tangent
             / ((self.a.inv_mass + self.b.inv_mass)
                 + ra.cross(tangent) * ra.cross(tangent) * self.a.inv_inertia
                 + rb.cross(tangent) * rb.cross(tangent) * self.b.inv_inertia);
-        let jt = tangent * impulse_magnitude_t;
+        let jt = impulse_direction_t * impulse_magnitude_t;
 
-        let impulse = jt + jn;
+        let impulse = jn + jt;
 
         self.a.apply_impulse(impulse, ra);
         self.b.apply_impulse(-impulse, rb);
