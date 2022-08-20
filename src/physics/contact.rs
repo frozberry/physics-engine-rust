@@ -47,7 +47,6 @@ impl<'a> Contact<'a> {
 
         let e = f32::min(self.a.restitution, self.b.restitution);
         let v_rel = self.a.vel - self.b.vel;
-        println!("v_rel: {:?}", v_rel);
         let v_rel_dot_normal = v_rel.dot(self.normal);
 
         let impulse_magnitude = -(1. + e) * v_rel_dot_normal / (self.a.inv_mass + self.b.inv_mass);
