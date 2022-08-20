@@ -32,8 +32,7 @@ impl Application {
     pub fn new() -> Self {
         let mut a = Body::new(Shape::Box(200., 200.), 600., 500., 1.);
         let mut b = Body::new(Shape::Box(200., 200.), 600., 500., 1.);
-        a.ang_vel = 0.4;
-        b.ang_vel = 0.1;
+        b.rotation = 1.;
 
         let mut application = Application {
             running: false,
