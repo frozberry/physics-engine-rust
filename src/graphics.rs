@@ -8,7 +8,7 @@ use sdl2::sys::{
 };
 use std::{mem::MaybeUninit, ptr};
 
-static mut RENDERER: *mut SDL_Renderer = ptr::null_mut();
+pub static mut RENDERER: *mut SDL_Renderer = ptr::null_mut();
 static mut WINDOW: *mut SDL_Window = ptr::null_mut();
 static mut WINDOW_HEIGHT: i32 = 0;
 static mut WINDOW_WIDTH: i32 = 0;

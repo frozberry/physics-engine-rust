@@ -10,7 +10,6 @@ use physics::{body::Body, contact::Contact, shape::Shape, vec2::Vec2};
 
 fn main() {
     let mut app = Application::new();
-    app.setup();
 
     while app.is_running() {
         app.input();

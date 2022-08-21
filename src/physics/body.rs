@@ -1,6 +1,20 @@
-use super::{shape::Shape, vec2::Vec2};
+use sdl2::sys::SDL_GetError;
+use sdl2::sys::{
+    image::IMG_Load, SDL_CreateTextureFromSurface, SDL_FreeRW, SDL_FreeSurface, SDL_Surface,
+    SDL_Texture,
+};
+use std::{ffi::CString, ptr};
 
-#[derive(Clone, Debug)]
+use std::os::raw::c_char;
+
+use crate::graphics;
+
+use super::{shape::Shape, vec2::Vec2};
+extern "C" {
+    fn puts(s: *const c_char);
+}
+
+#[derive(Clone)]
 pub struct Body {
     pub shape: Shape,
     pub is_colliding: bool,
@@ -21,6 +35,8 @@ pub struct Body {
     pub inertia: f32,
     pub inv_inertia: f32,
     pub net_torque: f32,
+
+    pub texture: *mut SDL_Texture,
 }
 
 impl Body {
@@ -50,6 +66,24 @@ impl Body {
             inertia,
             inv_inertia,
             net_torque: 0.,
+            texture: ptr::null_mut(),
+        }
+    }
+
+    pub fn add_texture(&mut self, path: &str) {
+        unsafe {
+            let file = CString::new(path).unwrap();
+            let f = file.as_ptr();
+            let surface = IMG_Load(f);
+
+            SDL_GetError();
+            if !surface.is_null() {
+                self.texture = SDL_CreateTextureFromSurface(graphics::RENDERER, surface);
+                // puts(SDL_GetError());
+                SDL_FreeSurface(surface);
+            } else {
+                panic!("Error setting texture")
+            }
         }
     }
 

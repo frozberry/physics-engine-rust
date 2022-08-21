@@ -32,15 +32,18 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
+        let running = graphics::open_window();
+
         let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 0.);
         a.restitution = 0.2;
         a.rotation = 0.7;
+        a.add_texture("./assets/crate.png");
         let mut b = Body::new(Shape::Box(4000., 100.), 800., 1300., 0.);
         b.restitution = 0.2;
         let mut c = Body::new(Shape::Box(300., 300.), 2000., 500., 1.);
 
         let mut application = Application {
-            running: false,
+            running,
             time_previous_frame: 0,
             bodies: vec![],
             push_force: Vec2::new(0., 0.),
@@ -58,12 +61,6 @@ impl Application {
 
     pub fn is_running(&self) -> bool {
         self.running
-    }
-
-    pub fn setup(&mut self) {
-        self.running = graphics::open_window()
-
-        // Todo setup objects in scnee
     }
 
     /* ---------------------------------- Input --------------------------------- */
@@ -130,7 +127,14 @@ impl Application {
                             let mut x = 1;
                             let mut y = 1;
                             SDL_GetMouseState(&mut x, &mut y);
-                            let mut p = Body::new(Shape::Circle(30.), x as f32, y as f32, 1.);
+                            let v = vec![
+                                Vec2::new(20., 60.),
+                                Vec2::new(-40., 20.),
+                                Vec2::new(-20., -60.),
+                                Vec2::new(20., -60.),
+                                Vec2::new(40., 20.),
+                            ];
+                            let mut p = Body::new(Shape::Polygon(v), x as f32, y as f32, 1.);
                             p.restitution = 0.3;
                             p.friction = 0.4;
                             self.bodies.push(p);
@@ -317,13 +321,31 @@ impl Application {
                         color,
                     );
                 }
-                Shape::Box(_, _) => graphics::draw_polygon(
+                Shape::Box(w, h) => {
+                    if !self.debug && !body.texture.is_null() {
+                        graphics::draw_texture(
+                            body.pos.x as i32,
+                            body.pos.y as i32,
+                            w as i32,
+                            h as i32,
+                            body.rotation,
+                            body.texture,
+                        );
+                    } else {
+                        graphics::draw_polygon(
+                            body.pos.x as i16,
+                            body.pos.y as i16,
+                            body.shape.get_world_verticies(body.rotation, body.pos),
+                            color,
+                        );
+                    }
+                }
+                Shape::Polygon(_) => graphics::draw_polygon(
                     body.pos.x as i16,
                     body.pos.y as i16,
                     body.shape.get_world_verticies(body.rotation, body.pos),
                     color,
                 ),
-                _ => {}
             }
         }
         graphics::render_frame();

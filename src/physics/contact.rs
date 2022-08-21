@@ -1,6 +1,5 @@
 use super::{body::Body, vec2::Vec2};
 
-#[derive(Debug)]
 pub struct Contact<'a> {
     pub a: &'a mut Body,
     pub b: &'a mut Body,

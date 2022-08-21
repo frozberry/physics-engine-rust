@@ -23,7 +23,7 @@ impl Shape {
             Shape::Circle(radius) => mass * radius * radius * 0.5,
             // 1/12 * (w^2 + h ^2)
             Shape::Box(w, h) => mass * 0.0833333 * (w * w + h * h),
-            Shape::Polygon(_) => panic!("Polygon inertia unimplemented"),
+            Shape::Polygon(_) => 5000.,
         }
     }
 
