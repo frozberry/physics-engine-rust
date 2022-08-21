@@ -30,11 +30,12 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 1.);
+        let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 0.);
         a.restitution = 0.2;
         a.rotation = 0.7;
-        let mut b = Body::new(Shape::Circle(100.), 1000., 800., 1.);
+        let mut b = Body::new(Shape::Box(4000., 100.), 800., 1300., 0.);
         b.restitution = 0.2;
+        let mut c = Body::new(Shape::Box(300., 300.), 2000., 500., 1.);
 
         let mut application = Application {
             running: false,
@@ -47,6 +48,7 @@ impl Application {
 
         application.bodies.push(b);
         application.bodies.push(a);
+        application.bodies.push(c);
         application
     }
 
@@ -118,14 +120,15 @@ impl Application {
                     // }
                     SDL_MOUSEBUTTONDOWN => {
                         // Code for spawning particles
-                        // if event.button.button == SDL_BUTTON_LEFT as u8 {
-                        //     let mut x = 1;
-                        //     let mut y = 1;
-                        //     SDL_GetMouseState(&mut x, &mut y);
-                        //     let mut p = Body::new(Shape::Box(100., 100.), x as f32, y as f32, 1.);
-                        //     p.restitution = 0.2;
-                        //     self.bodies.push(p);
-                        // }
+                        if event.button.button == SDL_BUTTON_LEFT as u8 {
+                            let mut x = 1;
+                            let mut y = 1;
+                            SDL_GetMouseState(&mut x, &mut y);
+                            let mut p = Body::new(Shape::Circle(30.), x as f32, y as f32, 1.);
+                            p.restitution = 0.3;
+                            p.friction = 0.4;
+                            self.bodies.push(p);
+                        }
 
                         // Code for pool effect
                         // if !self.left_mouse_button_down
@@ -185,7 +188,7 @@ impl Application {
             // body.add_force(drag);
 
             let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
-            // body.add_force(weight);
+            body.add_force(weight);
 
             body.add_force(self.push_force);
 

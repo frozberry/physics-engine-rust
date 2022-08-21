@@ -43,7 +43,7 @@ impl<'a> Contact<'a> {
     }
 
     pub fn resolve_collision(&mut self) {
-        // self.resolve_penetration();
+        self.resolve_penetration();
 
         let e = f32::min(self.a.restitution, self.b.restitution);
         let f = f32::min(self.a.friction, self.b.friction);

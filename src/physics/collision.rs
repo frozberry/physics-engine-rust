@@ -186,7 +186,7 @@ pub fn is_collidng_circle_polygon<'a>(
 
             let start = circle.pos - ac.unit_vector() * radius;
             let end = a;
-            let normal = ac.unit_vector();
+            let normal = -ac.unit_vector();
             let depth = (end - start).magnitude();
 
             return Some(Contact::new(circle, polygon, start, end, normal, depth));
@@ -200,7 +200,7 @@ pub fn is_collidng_circle_polygon<'a>(
 
             let start = circle.pos - bc.unit_vector() * radius;
             let end = b;
-            let normal = bc.unit_vector();
+            let normal = -bc.unit_vector();
             let depth = (end - start).magnitude();
 
             return Some(Contact::new(circle, polygon, start, end, normal, depth));
@@ -212,7 +212,7 @@ pub fn is_collidng_circle_polygon<'a>(
         }
 
         let depth = radius - distance_circle_edge;
-        let normal = ab.normal();
+        let normal = -ab.normal();
         let start = circle.pos - normal * radius;
         let end = start + normal * depth;
 
@@ -221,7 +221,7 @@ pub fn is_collidng_circle_polygon<'a>(
 
     // If center of circle is inside the polygon
     let depth = radius - distance_circle_edge;
-    let normal = ab.normal();
+    let normal = -ab.normal();
     let start = circle.pos - normal * radius;
     let end = start + normal * depth;
 
