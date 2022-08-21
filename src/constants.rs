@@ -21,3 +21,4 @@ pub const SDLK_LEFT: i32 = SDL_KeyCode::SDLK_LEFT as i32;
 pub const SDLK_RIGHT: i32 = SDL_KeyCode::SDLK_RIGHT as i32;
 pub const SDLK_D: i32 = SDL_KeyCode::SDLK_d as i32;
 pub const SDLK_G: i32 = SDL_KeyCode::SDLK_g as i32;
+pub const SDLK_P: i32 = SDL_KeyCode::SDLK_p as i32;

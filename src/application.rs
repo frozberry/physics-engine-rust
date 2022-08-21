@@ -16,6 +16,7 @@ pub struct Application {
     time_previous_frame: u32,
     debug: bool,
     gravity: bool,
+    poly: bool,
     world: World,
 }
 
@@ -36,13 +37,14 @@ impl Application {
         world.add_body(b);
 
         let wind = Vec2::new(0.5 * PIXELS_PER_METER, 0.);
-        world.add_force(wind);
+        // world.add_force(wind);
 
         let application = Application {
             running,
             time_previous_frame: 0,
             debug: false,
             gravity: true,
+            poly: false,
             world,
         };
 
@@ -81,6 +83,7 @@ impl Application {
                             }
                             SDLK_D => self.debug = !self.debug,
                             SDLK_G => self.gravity = !self.gravity,
+                            SDLK_P => self.poly = !self.poly,
                             _ => {}
                         }
                         break;
@@ -98,7 +101,13 @@ impl Application {
                                 Vec2::new(20., -60.),
                                 Vec2::new(40., 20.),
                             ];
-                            let mut p = Body::new(Shape::Polygon(v), x as f32, y as f32, 1.);
+                            let mut p;
+                            if self.poly {
+                                p = Body::new(Shape::Polygon(v), x as f32, y as f32, 1.);
+                            } else {
+                                p = Body::new(Shape::Box(100., 100.), x as f32, y as f32, 1.);
+                                p.add_texture("./assets/crate.png");
+                            }
                             p.restitution = 0.3;
                             p.friction = 0.4;
                             self.world.add_body(p)
