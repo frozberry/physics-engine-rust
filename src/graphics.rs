@@ -128,7 +128,7 @@ pub fn draw_circle(x: i16, y: i16, radius: i16, angle: f32, color: u32) {
         lineColor(RENDERER, x, y, x2 as i16, y2 as i16, color);
     }
 }
-pub fn draw_fill_circle(x: i16, y: i16, radius: i16, angle: f32, color: u32) {
+pub fn draw_fill_circle(x: i16, y: i16, radius: i16, _angle: f32, color: u32) {
     unsafe {
         filledCircleColor(RENDERER, x, y, radius, color);
     }

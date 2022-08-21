@@ -1,20 +1,15 @@
 use std::mem::MaybeUninit;
 
 use sdl2::sys::{
-    SDL_Delay, SDL_Event, SDL_GetMouseState, SDL_GetTicks, SDL_PollEvent, SDL_Rect,
+    SDL_Delay, SDL_Event, SDL_GetMouseState, SDL_GetTicks, SDL_PollEvent,
     SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT,
 };
 
 use crate::{
     constants::*,
-    force::{
-        generate_drag_force, generate_friction_force, generate_gravitational_force,
-        generate_spring_force, generate_spring_force_bodies,
-    },
-    graphics::{self, height},
+    graphics::{self},
     physics::{
-        body::{self, Body},
-        collision,
+        body::{Body},
         shape::Shape,
         vec2::Vec2,
         world::World,
