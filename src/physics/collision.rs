@@ -122,19 +122,14 @@ pub fn is_collidng_circle_polygon<'a>(
     polygon: &'a mut Body,
 ) -> Option<Contact<'a>> {
     // TODO writeup this design choice that enum needs to panic
-    if let Shape::Circle(_) = polygon.shape {
-        panic!("Incorrect shape");
-    }
-    if let Shape::Box(_, _) = circle.shape {
-        panic!("Incorrect shape");
-    }
-    if let Shape::Polygon(_) = circle.shape {
-        panic!("Incorrect shape");
-    }
-
-    let mut radius = 0.;
-    if let Shape::Circle(r) = circle.shape {
-        radius = r;
+    let radius;
+    match circle.shape {
+        Shape::Circle(r) => match polygon.shape {
+            Shape::Circle(_) => panic!("Incorrect shape"),
+            _ => radius = r,
+        },
+        Shape::Box(_, _) => panic!("Incorrect shape"),
+        Shape::Polygon(_) => panic!("Incorrect shape"),
     }
 
     let verticies = polygon
