@@ -26,6 +26,8 @@ pub struct Application {
     push_force: Vec2,
     mouse_cursor: Vec2,
     left_mouse_button_down: bool,
+    debug: bool,
+    gravity: bool,
 }
 
 impl Application {
@@ -44,6 +46,8 @@ impl Application {
             push_force: Vec2::new(0., 0.),
             mouse_cursor: Vec2::new(0., 0.),
             left_mouse_button_down: false,
+            debug: false,
+            gravity: true,
         };
 
         application.bodies.push(b);
@@ -96,6 +100,8 @@ impl Application {
                             SDLK_DOWN => self.bodies[0].pos.y += 10.,
                             SDLK_LEFT => self.bodies[0].pos.x -= 10.,
                             SDLK_RIGHT => self.bodies[0].pos.x += 10.,
+                            SDLK_D => self.debug = !self.debug,
+                            SDLK_W => self.gravity = !self.gravity,
                             _ => {}
                         }
                         break;
@@ -187,8 +193,10 @@ impl Application {
             let drag = generate_drag_force(body, 0.001);
             // body.add_force(drag);
 
-            let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
-            body.add_force(weight);
+            if self.gravity {
+                let weight = Vec2::new(0.0, body.mass * 9.8 * PIXELS_PER_METER);
+                body.add_force(weight);
+            }
 
             body.add_force(self.push_force);
 
@@ -219,28 +227,30 @@ impl Application {
                     if let Some(mut contact) = maybe_contact {
                         contact.resolve_collision();
 
-                        graphics::draw_fill_circle(
-                            contact.start.x as i16,
-                            contact.start.y as i16,
-                            4.0 as i16,
-                            0.,
-                            0xFFFF00FF,
-                        );
-                        graphics::draw_fill_circle(
-                            contact.end.x as i16,
-                            contact.end.y as i16,
-                            4.0 as i16,
-                            0.,
-                            0xFF00FF00,
-                        );
+                        if self.debug {
+                            graphics::draw_fill_circle(
+                                contact.start.x as i16,
+                                contact.start.y as i16,
+                                4.0 as i16,
+                                0.,
+                                0xFFFF00FF,
+                            );
+                            graphics::draw_fill_circle(
+                                contact.end.x as i16,
+                                contact.end.y as i16,
+                                4.0 as i16,
+                                0.,
+                                0xFF00FF00,
+                            );
 
-                        graphics::draw_line(
-                            contact.start.x as i16,
-                            contact.start.y as i16,
-                            (contact.start.x + contact.normal.x * 200.) as i16,
-                            (contact.start.y + contact.normal.y * 200.) as i16,
-                            0xFFFF00FF,
-                        );
+                            graphics::draw_line(
+                                contact.start.x as i16,
+                                contact.start.y as i16,
+                                (contact.start.x + contact.normal.x * 200.) as i16,
+                                (contact.start.y + contact.normal.y * 200.) as i16,
+                                0xFFFF00FF,
+                            );
+                        }
                     }
                 }
             }
@@ -292,7 +302,7 @@ impl Application {
 
         // Draw bodies
         for body in &self.bodies {
-            let color = if body.is_colliding {
+            let color = if body.is_colliding && self.debug {
                 0xFF0000FF
             } else {
                 0xFFFFFFFF
