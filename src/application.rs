@@ -1,26 +1,19 @@
 use std::mem::MaybeUninit;
 
 use sdl2::sys::{
-    SDL_Delay, SDL_Event, SDL_GetMouseState, SDL_GetTicks, SDL_PollEvent,
-    SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT,
+    SDL_Delay, SDL_Event, SDL_GetMouseState, SDL_GetTicks, SDL_PollEvent, SDL_BUTTON_LEFT,
+    SDL_BUTTON_RIGHT,
 };
 
 use crate::{
     constants::*,
     graphics::{self},
-    physics::{
-        body::{Body},
-        shape::Shape,
-        vec2::Vec2,
-        world::World,
-    },
+    physics::{body::Body, shape::Shape, vec2::Vec2, world::World},
 };
 
 pub struct Application {
     running: bool,
     time_previous_frame: u32,
-    mouse_cursor: Vec2,
-    left_mouse_button_down: bool,
     debug: bool,
     gravity: bool,
     world: World,
@@ -42,11 +35,12 @@ impl Application {
         world.add_body(a);
         world.add_body(b);
 
+        let wind = Vec2::new(0.5 * PIXELS_PER_METER, 0.);
+        world.add_force(wind);
+
         let application = Application {
             running,
             time_previous_frame: 0,
-            mouse_cursor: Vec2::new(0., 0.),
-            left_mouse_button_down: false,
             debug: false,
             gravity: true,
             world,

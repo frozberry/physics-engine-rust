@@ -1,8 +1,5 @@
 use sdl2::sys::SDL_GetError;
-use sdl2::sys::{
-    image::IMG_Load, SDL_CreateTextureFromSurface, SDL_FreeSurface,
-    SDL_Texture,
-};
+use sdl2::sys::{image::IMG_Load, SDL_CreateTextureFromSurface, SDL_FreeSurface, SDL_Texture};
 use std::{ffi::CString, ptr};
 
 use std::os::raw::c_char;
