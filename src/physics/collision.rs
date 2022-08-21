@@ -121,15 +121,6 @@ pub fn is_collidng_circle_polygon<'a>(
     circle: &'a mut Body,
     polygon: &'a mut Body,
 ) -> Option<Contact<'a>> {
-    // match circle.shape {
-    //     Shape::Circle(_) => match polygon.shape {
-    //         Shape::Circle(_) => panic!("Incorrect shape"),
-    //         Shape::Polygon(_) => todo!(),
-    //         Shape::Box(_, _) => todo!(),
-    //     },
-    //     _ => panic!("Incorrect shape"),
-    // }
-
     // TODO writeup this design choice that enum needs to panic
     if let Shape::Circle(_) = polygon.shape {
         panic!("Incorrect shape");
@@ -141,13 +132,19 @@ pub fn is_collidng_circle_polygon<'a>(
         panic!("Incorrect shape");
     }
 
+    let mut radius = 0.;
+    if let Shape::Circle(r) = circle.shape {
+        radius = r;
+    }
+
     let verticies = polygon
         .shape
         .get_world_verticies(polygon.rotation, polygon.pos);
 
-    let mut max_projection = f32::MIN;
+    let mut is_outside = false;
     let mut min_curr_vertex = Vec2::new(0., 0.);
     let mut min_next_vertex = Vec2::new(0., 0.);
+    let mut distance_circle_edge = f32::MIN;
 
     for i in 0..verticies.len() {
         let current_vertex = i;
@@ -159,28 +156,79 @@ pub fn is_collidng_circle_polygon<'a>(
 
         let normal = edge.normal();
 
-        let circle_center = circle.pos - verticies[current_vertex];
-        let projection = circle_center.dot(normal);
-        if projection > max_projection {
-            max_projection = projection;
+        let vertex_to_circle_center = circle.pos - verticies[current_vertex];
+        let projection = vertex_to_circle_center.dot(normal);
+
+        // If projection is positive/outsid the normal
+        if projection > 0. {
+            is_outside = true;
+            distance_circle_edge = projection;
             min_curr_vertex = verticies[current_vertex];
             min_next_vertex = verticies[next_vertex];
+            break;
+        } else {
+            // Circle is insid ethe polygon, find the min edge (least negative proejction)
+            if projection > distance_circle_edge {
+                distance_circle_edge = projection;
+                min_curr_vertex = verticies[current_vertex];
+                min_next_vertex = verticies[next_vertex];
+            }
         }
     }
 
-    graphics::draw_fill_circle(
-        min_curr_vertex.x as i16,
-        min_curr_vertex.y as i16,
-        5,
-        0.,
-        0xFFFFFFFF,
-    );
-    graphics::draw_fill_circle(
-        min_next_vertex.x as i16,
-        min_next_vertex.y as i16,
-        5,
-        0.,
-        0xFFFFFFFF,
-    );
-    None
+    let a = min_curr_vertex;
+    let b = min_next_vertex;
+
+    let ab = b - a;
+    let ac = circle.pos - a;
+    let bc = circle.pos - b;
+    if is_outside {
+        // Circle is in region A
+        if ac.dot(ab) < 0. {
+            if radius < ac.magnitude() {
+                return None;
+            }
+
+            let start = circle.pos - ac.unit_vector() * radius;
+            let end = a;
+            let normal = ac.unit_vector();
+            let depth = (end - start).magnitude();
+
+            return Some(Contact::new(circle, polygon, start, end, normal, depth));
+        }
+
+        // Circle is in region B
+        if bc.dot(ab) > 0. {
+            if radius < bc.magnitude() {
+                return None;
+            }
+
+            let start = circle.pos - bc.unit_vector() * radius;
+            let end = b;
+            let normal = bc.unit_vector();
+            let depth = (end - start).magnitude();
+
+            return Some(Contact::new(circle, polygon, start, end, normal, depth));
+        }
+
+        // Circle is in region C
+        if radius < distance_circle_edge {
+            return None;
+        }
+
+        let depth = radius - distance_circle_edge;
+        let normal = ab.normal();
+        let start = circle.pos - normal * radius;
+        let end = start + normal * depth;
+
+        return Some(Contact::new(circle, polygon, start, end, normal, depth));
+    }
+
+    // If center of circle is inside the polygon
+    let depth = radius - distance_circle_edge;
+    let normal = ab.normal();
+    let start = circle.pos - normal * radius;
+    let end = start + normal * depth;
+
+    Some(Contact::new(circle, polygon, start, end, normal, depth))
 }

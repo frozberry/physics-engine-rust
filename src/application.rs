@@ -32,7 +32,8 @@ impl Application {
     pub fn new() -> Self {
         let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 1.);
         a.restitution = 0.2;
-        let mut b = Body::new(Shape::Circle(100.), 1700., 1200., 1.);
+        a.rotation = 0.7;
+        let mut b = Body::new(Shape::Circle(100.), 1000., 800., 1.);
         b.restitution = 0.2;
 
         let mut application = Application {
@@ -89,10 +90,10 @@ impl Application {
                             // SDLK_DOWN => self.push_force.y = 50. * PIXELS_PER_METER,
                             // SDLK_LEFT => self.push_force.x = -50. * PIXELS_PER_METER,
                             // SDLK_RIGHT => self.push_force.x = 50. * PIXELS_PER_METER,
-                            SDLK_UP => self.bodies[0].pos.y -= 50.,
-                            SDLK_DOWN => self.bodies[0].pos.y += 50.,
-                            SDLK_LEFT => self.bodies[0].pos.x -= 50.,
-                            SDLK_RIGHT => self.bodies[0].pos.x += 50.,
+                            SDLK_UP => self.bodies[0].pos.y -= 10.,
+                            SDLK_DOWN => self.bodies[0].pos.y += 10.,
+                            SDLK_LEFT => self.bodies[0].pos.x -= 10.,
+                            SDLK_RIGHT => self.bodies[0].pos.x += 10.,
                             _ => {}
                         }
                         break;
@@ -117,14 +118,14 @@ impl Application {
                     // }
                     SDL_MOUSEBUTTONDOWN => {
                         // Code for spawning particles
-                        if event.button.button == SDL_BUTTON_LEFT as u8 {
-                            let mut x = 1;
-                            let mut y = 1;
-                            SDL_GetMouseState(&mut x, &mut y);
-                            let mut p = Body::new(Shape::Box(100., 100.), x as f32, y as f32, 1.);
-                            p.restitution = 0.2;
-                            self.bodies.push(p);
-                        }
+                        // if event.button.button == SDL_BUTTON_LEFT as u8 {
+                        //     let mut x = 1;
+                        //     let mut y = 1;
+                        //     SDL_GetMouseState(&mut x, &mut y);
+                        //     let mut p = Body::new(Shape::Box(100., 100.), x as f32, y as f32, 1.);
+                        //     p.restitution = 0.2;
+                        //     self.bodies.push(p);
+                        // }
 
                         // Code for pool effect
                         // if !self.left_mouse_button_down
