@@ -36,14 +36,7 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let (sdl, canvas) = init_sdl();
-        let texture_creator = canvas.texture_creator();
-        let basketball_texture = texture_creator
-            .load_texture("./assets/basketball.png")
-            .expect("Could not load texture");
-        let crate_texture = texture_creator
-            .load_texture("./assets/crate.png")
-            .expect("Could not load texture");
+        let (sdl, canvas, basketball_texture, crate_texture) = init_sdl();
 
         let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 0.);
         a.restitution = 0.2;

@@ -1,7 +1,13 @@
 use crate::constants::{HEIGHT, WIDTH};
-use sdl2::{pixels::Color, render::Canvas, video::Window, Sdl};
+use sdl2::{
+    image::LoadTexture,
+    pixels::Color,
+    render::{Canvas, Texture},
+    video::Window,
+    Sdl,
+};
 
-pub fn init_sdl() -> (Sdl, Canvas<Window>) {
+pub fn init_sdl() -> (Sdl, Canvas<Window>, Texture, Texture) {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
@@ -17,5 +23,13 @@ pub fn init_sdl() -> (Sdl, Canvas<Window>) {
     canvas.clear();
     canvas.present();
 
-    return (sdl_context, canvas);
+    let texture_creator = canvas.texture_creator();
+    let basketball_texture = texture_creator
+        .load_texture("./assets/basketball.png")
+        .expect("Could not load texture");
+    let crate_texture = texture_creator
+        .load_texture("./assets/crate.png")
+        .expect("Could not load texture");
+
+    return (sdl_context, canvas, basketball_texture, crate_texture);
 }
