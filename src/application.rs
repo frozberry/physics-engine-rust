@@ -49,7 +49,7 @@ impl Application {
             time_previous_frame: SystemTime::now(),
             debug: true,
             gravity: true,
-            poly: false,
+            poly: true,
             world,
         };
 
@@ -69,8 +69,8 @@ impl Application {
                         self.running = false;
                     }
                     Keycode::D => self.debug = !self.debug,
-                    Keycode::G => self.poly = !self.poly,
-                    Keycode::P => self.gravity = !self.gravity,
+                    Keycode::G => self.gravity = !self.gravity,
+                    Keycode::P => self.poly = !self.poly,
                     _ => {}
                 },
                 Event::MouseButtonDown {
@@ -188,12 +188,13 @@ impl Application {
                 }
                 Shape::Polygon(_) => {
                     if !self.debug {
-                        // graphics::draw_fill_polygon(
-                        //     body.pos.x as i16,
-                        //     body.pos.y as i16,
-                        //     body.shape.get_world_verticies(body.rotation, body.pos),
-                        //     color,
-                        // );
+                        graphics::draw_fill_polygon(
+                            body.pos.x as i16,
+                            body.pos.y as i16,
+                            body.shape.get_world_verticies(body.rotation, body.pos),
+                            color,
+                            &mut self.canvas,
+                        );
                     } else {
                         graphics::draw_polygon(
                             body.pos.x as i16,

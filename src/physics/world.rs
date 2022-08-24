@@ -75,33 +75,8 @@ impl World {
                     // is_colliding doesn't mutate a and b directly. But they need to be passed as mutable
                     // references since they will be used in instantiate a Contact class, which has mutable
                     // references to bodies. I'm not sure if this is the must idiomatic Rust way.
-
                     if let Some(mut contact) = maybe_contact {
                         contact.resolve_collision();
-
-                        // if debug {
-                        //     graphics::draw_fill_circle(
-                        //         contact.start.x as i16,
-                        //         contact.start.y as i16,
-                        //         4.0 as i16,
-                        //         0.,
-                        //         0xFFFF00FF,
-                        //     );
-                        //     graphics::draw_fill_circle(
-                        //         contact.end.x as i16,
-                        //         contact.end.y as i16,
-                        //         4.0 as i16,
-                        //         0.,
-                        //         0xFF00FF00,
-                        //     );
-                        //     graphics::draw_line(
-                        //         contact.start.x as i16,
-                        //         contact.start.y as i16,
-                        //         (contact.start.x + contact.normal.x * 200.) as i16,
-                        //         (contact.start.y + contact.normal.y * 200.) as i16,
-                        //         0xFFFF00FF,
-                        //     );
-                        // }
                     }
                 }
             }

@@ -109,23 +109,25 @@ pub fn draw_polygon(
     canvas.filled_circle(x, y, 1, color).unwrap();
 }
 
-// pub fn draw_fill_polygon(x: i16, y: i16, vertices: Vec<Vec2>, color: u32) {
-//     unsafe {
-//         let mut vx: Vec<i16> = vec![];
-//         let mut vy: Vec<i16> = vec![];
+pub fn draw_fill_polygon(
+    x: i16,
+    y: i16,
+    vertices: Vec<Vec2>,
+    color: Color,
+    canvas: &mut Canvas<Window>,
+) {
+    let mut vx: Vec<i16> = vec![];
+    let mut vy: Vec<i16> = vec![];
 
-//         let vertices_len = vertices.len();
+    for vertex in vertices {
+        vx.push(vertex.x as i16);
+        vy.push(vertex.y as i16);
+    }
 
-//         // Original code uses two seperate loops to do this - not sure why
-//         for vertex in vertices {
-//             vx.push(vertex.x as i16);
-//             vy.push(vertex.y as i16);
-//         }
+    canvas.filled_polygon(&vx, &vy, color).unwrap();
+    canvas.filled_circle(x, y, 1, Color::BLACK).unwrap();
+}
 
-//         filledPolygonColor(RENDERER, &vx[0], &vy[0], vertices_len as i32, color);
-//         filledCircleColor(RENDERER, x, y, 1, 0xFF000000);
-//     }
-// }
 // // This takes i32 as parameters since SDL_Rect wants c_ints (which are i32s).
 // pub fn draw_texture(
 //     x: i32,
