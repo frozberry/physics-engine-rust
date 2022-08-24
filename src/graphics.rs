@@ -4,16 +4,12 @@ use sdl2::{
     pixels::Color,
     rect::Rect,
     render::{Canvas, Texture},
-    sys::gfx::primitives::{
-        boxColor, circleColor, filledCircleColor, filledPolygonColor, lineColor,
-    },
     video::Window,
 };
 
 pub fn clear_screen(color: Color, canvas: &mut Canvas<Window>) {
     canvas.set_draw_color(color);
     canvas.clear();
-    // canvas.present();
 }
 
 pub fn draw_line(x1: i16, y1: i16, x2: i16, y2: i16, color: Color, canvas: &mut Canvas<Window>) {
@@ -47,7 +43,7 @@ pub fn draw_fill_circle(
     color: Color,
     canvas: &mut Canvas<Window>,
 ) {
-    canvas.circle(x, y, radius, color);
+    canvas.circle(x, y, radius, color).unwrap();
 }
 
 pub fn draw_rect(

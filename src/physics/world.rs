@@ -34,7 +34,7 @@ impl World {
         self.torques.push(torque);
     }
 
-    pub fn update(&mut self, dt: f32, gravity: bool, debug: bool) {
+    pub fn update(&mut self, dt: f32, gravity: bool) {
         for body in &mut self.bodies {
             if gravity {
                 let weight = Vec2::new(0.0, body.mass * self.g * PIXELS_PER_METER);
@@ -52,10 +52,10 @@ impl World {
             body.update(dt)
         }
 
-        self.check_collisions(debug);
+        self.check_collisions();
     }
 
-    pub fn check_collisions(&mut self, debug: bool) {
+    pub fn check_collisions(&mut self) {
         for body in &mut self.bodies {
             body.is_colliding = false;
         }

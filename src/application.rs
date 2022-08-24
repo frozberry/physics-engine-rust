@@ -17,13 +17,8 @@ use sdl2::{
 use crate::{
     constants::MILLISECS_PER_FRAME,
     graphics::{self},
-    my_texture::{self, MyTexture},
-    physics::{
-        body::{self, Body},
-        shape::Shape,
-        vec2::Vec2,
-        world::World,
-    },
+    my_texture::MyTexture,
+    physics::{body::Body, shape::Shape, vec2::Vec2, world::World},
     sdl::init_sdl,
 };
 
@@ -154,7 +149,7 @@ impl Application {
 
         let dt = f32::min(delta_time_ms as f32 / 1000., 0.016);
 
-        self.world.update(dt, self.gravity, self.debug);
+        self.world.update(dt, self.gravity);
         self.time_previous_frame = now;
     }
 

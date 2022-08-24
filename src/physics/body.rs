@@ -1,11 +1,6 @@
 use crate::my_texture::MyTexture;
 
 use super::{shape::Shape, vec2::Vec2};
-use sdl2::sys::SDL_Texture;
-use std::{os::raw::c_char, ptr};
-extern "C" {
-    fn puts(s: *const c_char);
-}
 
 #[derive(Clone)]
 pub struct Body {
