@@ -1,3 +1,5 @@
+use crate::my_texture::MyTexture;
+
 use super::{shape::Shape, vec2::Vec2};
 use sdl2::sys::SDL_Texture;
 use std::{os::raw::c_char, ptr};
@@ -27,11 +29,17 @@ pub struct Body {
     pub inv_inertia: f32,
     pub net_torque: f32,
 
-    pub texture: *mut SDL_Texture,
+    pub texture: Option<MyTexture>,
 }
 
 impl Body {
-    pub fn new(shape: Shape, x: f32, y: f32, mass: f32) -> Self {
+    pub fn new<T: Into<Option<MyTexture>>>(
+        shape: Shape,
+        x: f32,
+        y: f32,
+        mass: f32,
+        texture: T,
+    ) -> Self {
         let inertia = shape.calc_inertia(mass);
         let inv_inertia = if inertia > 0. { 1. / inertia } else { 0. };
         let inv_mass = if mass != 0. { 1. / mass } else { 0. };
@@ -57,25 +65,8 @@ impl Body {
             inertia,
             inv_inertia,
             net_torque: 0.,
-            texture: ptr::null_mut(),
+            texture: texture.into(),
         }
-    }
-
-    pub fn add_texture(&mut self, path: &str) {
-        // unsafe {
-        //     let file = CString::new(path).unwrap();
-        //     let f = file.as_ptr();
-        //     let surface = IMG_Load(f);
-
-        //     SDL_GetError();
-        //     if !surface.is_null() {
-        //         // self.texture = SDL_CreateTextureFromSurface(graphics::RENDERER, surface);
-        //         // puts(SDL_GetError());
-        //         SDL_FreeSurface(surface);
-        //     } else {
-        //         panic!("Error setting texture")
-        //     }
-        // }
     }
 
     pub fn update(&mut self, dt: f32) {

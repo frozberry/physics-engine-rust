@@ -5,7 +5,6 @@ use std::{
 
 use sdl2::{
     event::Event,
-    image::LoadTexture,
     keyboard::Keycode,
     mouse::MouseButton,
     pixels::Color,
@@ -17,6 +16,7 @@ use sdl2::{
 use crate::{
     constants::MILLISECS_PER_FRAME,
     graphics::{self},
+    my_texture::{self, MyTexture},
     physics::{body::Body, shape::Shape, vec2::Vec2, world::World},
     sdl::init_sdl,
 };
@@ -32,17 +32,17 @@ pub struct Application {
     world: World,
     crate_texture: Texture,
     basketball_texture: Texture,
+    bowlingball_texture: Texture,
 }
 
 impl Application {
     pub fn new() -> Self {
-        let (sdl, canvas, basketball_texture, crate_texture) = init_sdl();
+        let (sdl, canvas, basketball_texture, crate_texture, bowlingball_texture) = init_sdl();
 
-        let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 0.);
+        let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 0., MyTexture::Crate);
         a.restitution = 0.2;
         a.rotation = 0.7;
-        a.add_texture("./assets/crate.png");
-        let mut b = Body::new(Shape::Box(4000., 100.), 800., 1300., 0.);
+        let mut b = Body::new(Shape::Box(4000., 100.), 800., 1300., 0., None);
         b.restitution = 0.6;
 
         let mut world = World::new(9.81);
@@ -55,12 +55,13 @@ impl Application {
             canvas,
             running: true,
             time_previous_frame: SystemTime::now(),
-            debug: true,
+            debug: false,
             gravity: true,
-            poly: true,
+            poly: false,
             world,
             crate_texture,
             basketball_texture,
+            bowlingball_texture,
         };
 
         application
@@ -96,17 +97,28 @@ impl Application {
                         ];
                         let mut p;
                         if self.poly {
-                            p = Body::new(Shape::Polygon(v), x as f32, y as f32, 1.);
+                            p = Body::new(Shape::Polygon(v), x as f32, y as f32, 1., None);
                         } else {
-                            p = Body::new(Shape::Box(100., 100.), x as f32, y as f32, 1.);
-                            p.add_texture("./assets/crate.png");
+                            p = Body::new(
+                                Shape::Box(100., 100.),
+                                x as f32,
+                                y as f32,
+                                1.,
+                                MyTexture::Crate,
+                            );
                         }
                         p.restitution = 0.3;
                         p.friction = 0.4;
                         self.world.add_body(p)
                     }
                     MouseButton::Right => {
-                        let mut p = Body::new(Shape::Circle(40.), x as f32, y as f32, 1.);
+                        let mut p = Body::new(
+                            Shape::Circle(40.),
+                            x as f32,
+                            y as f32,
+                            1.,
+                            MyTexture::BasketBall,
+                        );
                         p.restitution = 0.8;
                         p.friction = 0.4;
                         self.world.add_body(p)
@@ -155,17 +167,7 @@ impl Application {
             };
             match body.shape {
                 Shape::Circle(radius) => {
-                    if !self.debug {
-                        graphics::draw_texture(
-                            body.pos.x as i32,
-                            body.pos.y as i32,
-                            radius as u32 * 2,
-                            radius as u32 * 2,
-                            body.rotation,
-                            &self.basketball_texture,
-                            &mut self.canvas,
-                        )
-                    } else {
+                    if self.debug || body.texture.is_none() {
                         graphics::draw_circle(
                             body.pos.x as i16,
                             body.pos.y as i16,
@@ -174,25 +176,45 @@ impl Application {
                             color,
                             &mut self.canvas,
                         );
+                    } else {
+                        let texture = match body.texture.unwrap() {
+                            MyTexture::Crate => &self.crate_texture,
+                            MyTexture::BowlingBall => &self.bowlingball_texture,
+                            MyTexture::BasketBall => &self.basketball_texture,
+                        };
+                        graphics::draw_texture(
+                            body.pos.x as i32,
+                            body.pos.y as i32,
+                            radius as u32 * 2,
+                            radius as u32 * 2,
+                            body.rotation,
+                            &texture,
+                            &mut self.canvas,
+                        )
                     }
                 }
                 Shape::Box(width, height) => {
-                    if !self.debug {
+                    if self.debug || body.texture.is_none() {
+                        graphics::draw_polygon(
+                            body.pos.x as i16,
+                            body.pos.y as i16,
+                            body.shape.get_world_verticies(body.rotation, body.pos),
+                            color,
+                            &mut self.canvas,
+                        );
+                    } else {
+                        let texture = match body.texture.unwrap() {
+                            MyTexture::Crate => &self.crate_texture,
+                            MyTexture::BowlingBall => &self.bowlingball_texture,
+                            MyTexture::BasketBall => &self.basketball_texture,
+                        };
                         graphics::draw_texture(
                             body.pos.x as i32,
                             body.pos.y as i32,
                             width as u32,
                             height as u32,
                             body.rotation,
-                            &self.crate_texture,
-                            &mut self.canvas,
-                        );
-                    } else {
-                        graphics::draw_polygon(
-                            body.pos.x as i16,
-                            body.pos.y as i16,
-                            body.shape.get_world_verticies(body.rotation, body.pos),
-                            color,
+                            texture,
                             &mut self.canvas,
                         );
                     }
