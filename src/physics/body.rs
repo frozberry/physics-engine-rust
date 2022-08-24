@@ -69,6 +69,32 @@ impl Body {
         }
     }
 
+    pub fn basketball(x: f32, y: f32) -> Self {
+        let mut b = Body::new(
+            Shape::Circle(40.),
+            x as f32,
+            y as f32,
+            1.,
+            MyTexture::BasketBall,
+        );
+        b.restitution = 0.8;
+        b.friction = 0.5;
+        b
+    }
+
+    pub fn bowlingball(x: f32, y: f32) -> Self {
+        let mut b = Body::new(
+            Shape::Circle(30.),
+            x as f32,
+            y as f32,
+            10.,
+            MyTexture::BowlingBall,
+        );
+        b.restitution = 0.2;
+        b.friction = 0.2;
+        b
+    }
+
     pub fn update(&mut self, dt: f32) {
         if self.is_static {
             return;

@@ -3,6 +3,7 @@ use std::{
     time::{Duration, SystemTime},
 };
 
+use rand::Rng;
 use sdl2::{
     event::Event,
     keyboard::Keycode,
@@ -17,7 +18,12 @@ use crate::{
     constants::MILLISECS_PER_FRAME,
     graphics::{self},
     my_texture::{self, MyTexture},
-    physics::{body::Body, shape::Shape, vec2::Vec2, world::World},
+    physics::{
+        body::{self, Body},
+        shape::Shape,
+        vec2::Vec2,
+        world::World,
+    },
     sdl::init_sdl,
 };
 
@@ -112,16 +118,13 @@ impl Application {
                         self.world.add_body(p)
                     }
                     MouseButton::Right => {
-                        let mut p = Body::new(
-                            Shape::Circle(40.),
-                            x as f32,
-                            y as f32,
-                            1.,
-                            MyTexture::BasketBall,
-                        );
-                        p.restitution = 0.8;
-                        p.friction = 0.4;
-                        self.world.add_body(p)
+                        let mut rng = rand::thread_rng();
+                        let r: f64 = rng.gen();
+                        if r > 0.5 {
+                            self.world.add_body(Body::basketball(x as f32, y as f32));
+                        } else {
+                            self.world.add_body(Body::bowlingball(x as f32, y as f32));
+                        }
                     }
                     _ => {}
                 },
