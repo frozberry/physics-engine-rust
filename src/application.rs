@@ -51,7 +51,7 @@ impl Application {
         world.add_body(a);
         world.add_body(b);
 
-        let application = Application {
+        Application {
             sdl,
             canvas,
             running: true,
@@ -63,9 +63,7 @@ impl Application {
             crate_texture,
             basketball_texture,
             bowlingball_texture,
-        };
-
-        application
+        }
     }
 
     /* ---------------------------------- Input --------------------------------- */
@@ -186,7 +184,7 @@ impl Application {
                             radius as u32 * 2,
                             radius as u32 * 2,
                             body.rotation,
-                            &texture,
+                            texture,
                             &mut self.canvas,
                         )
                     }

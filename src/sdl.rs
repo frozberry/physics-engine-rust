@@ -34,11 +34,11 @@ pub fn init_sdl() -> (Sdl, Canvas<Window>, Texture, Texture, Texture) {
         .load_texture("./assets/bowlingball.png")
         .expect("Could not load texture");
 
-    return (
+    (
         sdl_context,
         canvas,
         basketball_texture,
         crate_texture,
         bowlingball_texture,
-    );
+    )
 }
