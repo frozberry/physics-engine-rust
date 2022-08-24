@@ -36,9 +36,6 @@ impl Application {
         world.add_body(a);
         world.add_body(b);
 
-        let wind = Vec2::new(0.5 * PIXELS_PER_METER, 0.);
-        // world.add_force(wind);
-
         let application = Application {
             running,
             time_previous_frame: 0,
@@ -122,33 +119,8 @@ impl Application {
                             p.friction = 0.4;
                             self.world.add_body(p)
                         }
-
-                        // Code for pool effect
-                        // if !self.left_mouse_button_down
-                        //     && event.button.button == SDL_BUTTON_LEFT as u8
-                        // {
-                        // self.left_mouse_button_down = true;
-                        //     let mut x = 1;
-                        //     let mut y = 1;
-                        //     SDL_GetMouseState(&mut x, &mut y);
-                        //     self.mouse_cursor.x = x as f32;
-                        //     self.mouse_cursor.y = y as f32;
-                        // }
-
-                        break;
                     }
-                    // SDL_MOUSEBUTTONUP => {
-                    //     if self.left_mouse_button_down
-                    //         && event.button.button == SDL_BUTTON_LEFT as u8
-                    //     {
-                    //         self.left_mouse_button_down = false;
-                    //         let distance = self.bodies[0].pos - self.mouse_cursor;
-                    //         let impulse_direction = distance.unit_vector();
-                    //         let impulse_magnitude = distance.magnitude() * 5.0;
-                    //         self.bodies[0].vel = impulse_direction * impulse_magnitude;
-                    //     }
-                    //     break;
-                    // }
+
                     _ => {}
                 }
             }
