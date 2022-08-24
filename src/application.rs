@@ -4,8 +4,14 @@ use std::{
 };
 
 use sdl2::{
-    event::Event, keyboard::Keycode, mouse::MouseButton, pixels::Color, render::Canvas,
-    video::Window, Sdl,
+    event::Event,
+    image::LoadTexture,
+    keyboard::Keycode,
+    mouse::MouseButton,
+    pixels::Color,
+    render::{Canvas, Texture},
+    video::Window,
+    Sdl,
 };
 
 use crate::{
@@ -24,11 +30,20 @@ pub struct Application {
     gravity: bool,
     poly: bool,
     world: World,
+    crate_texture: Texture,
+    basketball_texture: Texture,
 }
 
 impl Application {
     pub fn new() -> Self {
         let (sdl, canvas) = init_sdl();
+        let texture_creator = canvas.texture_creator();
+        let basketball_texture = texture_creator
+            .load_texture("./assets/basketball.png")
+            .expect("Could not load texture");
+        let crate_texture = texture_creator
+            .load_texture("./assets/crate.png")
+            .expect("Could not load texture");
 
         let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 0.);
         a.restitution = 0.2;
@@ -51,6 +66,8 @@ impl Application {
             gravity: true,
             poly: true,
             world,
+            crate_texture,
+            basketball_texture,
         };
 
         application
@@ -97,7 +114,6 @@ impl Application {
                     }
                     MouseButton::Right => {
                         let mut p = Body::new(Shape::Circle(40.), x as f32, y as f32, 1.);
-                        p.add_texture("./assets/basketball.png");
                         p.restitution = 0.8;
                         p.friction = 0.4;
                         self.world.add_body(p)
@@ -146,15 +162,16 @@ impl Application {
             };
             match body.shape {
                 Shape::Circle(radius) => {
-                    if !self.debug && !body.texture.is_null() {
-                        // graphics::draw_texture(
-                        //     body.pos.x as i32,
-                        //     body.pos.y as i32,
-                        //     radius as i32 * 2,
-                        //     radius as i32 * 2,
-                        //     body.rotation,
-                        //     body.texture,
-                        // )
+                    if !self.debug {
+                        graphics::draw_texture(
+                            body.pos.x as i32,
+                            body.pos.y as i32,
+                            radius as u32 * 2,
+                            radius as u32 * 2,
+                            body.rotation,
+                            &self.basketball_texture,
+                            &mut self.canvas,
+                        )
                     } else {
                         graphics::draw_circle(
                             body.pos.x as i16,
@@ -167,15 +184,16 @@ impl Application {
                     }
                 }
                 Shape::Box(width, height) => {
-                    if !self.debug && !body.texture.is_null() {
-                        // graphics::draw_texture(
-                        //     body.pos.x as i32,
-                        //     body.pos.y as i32,
-                        //     w as i32,
-                        //     h as i32,
-                        //     body.rotation,
-                        //     body.texture,
-                        // );
+                    if !self.debug {
+                        graphics::draw_texture(
+                            body.pos.x as i32,
+                            body.pos.y as i32,
+                            width as u32,
+                            height as u32,
+                            body.rotation,
+                            &self.crate_texture,
+                            &mut self.canvas,
+                        );
                     } else {
                         graphics::draw_polygon(
                             body.pos.x as i16,

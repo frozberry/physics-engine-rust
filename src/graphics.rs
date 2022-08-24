@@ -3,7 +3,7 @@ use sdl2::{
     gfx::primitives::DrawRenderer,
     pixels::Color,
     rect::Rect,
-    render::Canvas,
+    render::{Canvas, Texture},
     sys::gfx::primitives::{
         boxColor, circleColor, filledCircleColor, filledPolygonColor, lineColor,
     },
@@ -19,14 +19,6 @@ pub fn clear_screen(color: Color, canvas: &mut Canvas<Window>) {
 pub fn draw_line(x1: i16, y1: i16, x2: i16, y2: i16, color: Color, canvas: &mut Canvas<Window>) {
     canvas.line(x1, y1, x2, y2, color).unwrap();
 }
-
-// C++ code uses floats, but I'm not sure why since it gets casted to a Sint16 anyway
-// x - width / 2.0,
-
-// I'm just going to use ints the whole time
-// x - width / 2
-
-// I'm also going to cast angles to i16
 
 pub fn draw_circle(
     x: i16,
@@ -128,33 +120,31 @@ pub fn draw_fill_polygon(
     canvas.filled_circle(x, y, 1, Color::BLACK).unwrap();
 }
 
-// // This takes i32 as parameters since SDL_Rect wants c_ints (which are i32s).
-// pub fn draw_texture(
-//     x: i32,
-//     y: i32,
-//     width: i32,
-//     height: i32,
-//     rotation: f32,
-//     texture: *mut SDL_Texture,
-// ) {
-//     unsafe {
-//         let dst_rect = SDL_Rect {
-//             x: x - (width / 2),
-//             y: y - (height / 2),
-//             w: width,
-//             h: height,
-//         };
-//         let rotation_deg = rotation * 57.2958;
-
-//         // Pass in null raw pointers
-//         SDL_RenderCopyEx(
-//             RENDERER,
-//             texture,
-//             ptr::null(),
-//             &dst_rect,
-//             rotation_deg as f64,
-//             ptr::null(),
-//             SDL_RendererFlip::SDL_FLIP_NONE,
-//         );
-//     }
-// }
+pub fn draw_texture(
+    x: i32,
+    y: i32,
+    width: u32,
+    height: u32,
+    rotation: f32,
+    texture: &Texture,
+    canvas: &mut Canvas<Window>,
+) {
+    let rect = Rect::new(
+        x - (width / 2) as i32,
+        y - (height / 2) as i32,
+        width,
+        height,
+    );
+    let rotation_deg = rotation * 57.2958;
+    canvas
+        .copy_ex(
+            &texture,
+            None,
+            rect,
+            rotation_deg as f64,
+            None,
+            false,
+            false,
+        )
+        .unwrap();
+}
