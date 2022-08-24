@@ -1,8 +1,5 @@
-use core::panic;
-
-
-
 use super::{body::Body, contact::Contact, shape::Shape, vec2::Vec2};
+use core::panic;
 
 pub fn is_colliding<'a>(a: &'a mut Body, b: &'a mut Body) -> Option<Contact<'a>> {
     match a.shape {

@@ -1,6 +1,5 @@
 use crate::{
     constants::PIXELS_PER_METER,
-    graphics,
     physics::{body::Body, collision, vec2::Vec2},
 };
 

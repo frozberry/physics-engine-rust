@@ -1,21 +1,11 @@
 use std::time::Duration;
 
 use sdl2::{
-    event::Event,
-    keyboard::Keycode,
-    mouse::MouseButton,
-    pixels::Color,
-    render::Canvas,
-    sys::{
-        SDL_Delay, SDL_Event, SDL_GetMouseState, SDL_GetTicks, SDL_PollEvent, SDL_BUTTON_LEFT,
-        SDL_BUTTON_RIGHT,
-    },
-    video::Window,
-    Sdl,
+    event::Event, keyboard::Keycode, mouse::MouseButton, pixels::Color, render::Canvas,
+    video::Window, Sdl,
 };
 
 use crate::{
-    constants::*,
     graphics::{self},
     physics::{body::Body, shape::Shape, vec2::Vec2, world::World},
     sdl::init_sdl,

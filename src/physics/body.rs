@@ -1,12 +1,6 @@
-use sdl2::sys::SDL_GetError;
-use sdl2::sys::{image::IMG_Load, SDL_CreateTextureFromSurface, SDL_FreeSurface, SDL_Texture};
-use std::{ffi::CString, ptr};
-
-use std::os::raw::c_char;
-
-use crate::graphics;
-
 use super::{shape::Shape, vec2::Vec2};
+use sdl2::sys::SDL_Texture;
+use std::{os::raw::c_char, ptr};
 extern "C" {
     fn puts(s: *const c_char);
 }
