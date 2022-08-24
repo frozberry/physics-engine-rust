@@ -1,4 +1,7 @@
-use std::time::Duration;
+use std::{
+    thread::sleep,
+    time::{Duration, SystemTime},
+};
 
 use sdl2::{
     event::Event, keyboard::Keycode, mouse::MouseButton, pixels::Color, render::Canvas,
@@ -6,6 +9,7 @@ use sdl2::{
 };
 
 use crate::{
+    constants::MILLISECS_PER_FRAME,
     graphics::{self},
     physics::{body::Body, shape::Shape, vec2::Vec2, world::World},
     sdl::init_sdl,
@@ -15,7 +19,7 @@ pub struct Application {
     sdl: Sdl,
     canvas: Canvas<Window>,
     running: bool,
-    time_previous_frame: u32,
+    time_previous_frame: SystemTime,
     debug: bool,
     gravity: bool,
     poly: bool,
@@ -42,7 +46,7 @@ impl Application {
             sdl,
             canvas,
             running: true,
-            time_previous_frame: 0,
+            time_previous_frame: SystemTime::now(),
             debug: true,
             gravity: true,
             poly: false,
@@ -109,25 +113,25 @@ impl Application {
     pub fn update(&mut self) {
         graphics::clear_screen(Color::RGB(0, 64, 255), &mut self.canvas);
 
-        // unsafe {
-        //     let time_since_last_frame = SDL_GetTicks() - self.time_previous_frame;
-        //     let time_to_wait = MILLISECS_PER_FRAME - time_since_last_frame as i32;
-        //     if time_to_wait > 0 {
-        //         SDL_Delay(time_to_wait as u32)
-        //     }
-        // }
+        let time_since_last_frame = SystemTime::now()
+            .duration_since(self.time_previous_frame)
+            .unwrap();
+        let time_to_wait = MILLISECS_PER_FRAME - time_since_last_frame.as_millis() as i32;
+        if time_to_wait > 0 {
+            sleep(Duration::from_millis(time_to_wait as u64));
+        }
 
-        // let sdl_ticks;
-        // unsafe {
-        //     sdl_ticks = SDL_GetTicks();
-        // }
+        let now = SystemTime::now();
 
-        // let delta_time_ms = (sdl_ticks - self.time_previous_frame) as f32;
-        // let delta_time = f32::min(delta_time_ms / 1000., 0.016);
+        let delta_time_ms = now
+            .duration_since(self.time_previous_frame)
+            .unwrap()
+            .as_millis();
 
-        let dt = 0.016;
+        let dt = f32::min(delta_time_ms as f32 / 1000., 0.016);
+
         self.world.update(dt, self.gravity, self.debug);
-        // self.time_previous_frame = sdl_ticks;
+        self.time_previous_frame = now;
     }
 
     /* --------------------------------- Render --------------------------------- */
@@ -204,7 +208,6 @@ impl Application {
         }
 
         self.canvas.present();
-        ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
 
     pub fn is_running(&self) -> bool {
