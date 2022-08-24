@@ -38,8 +38,8 @@ impl<'a> Contact<'a> {
         let da: f32 = self.depth / (self.a.inv_mass + self.b.inv_mass) * self.a.inv_mass;
         let db: f32 = self.depth / (self.a.inv_mass + self.b.inv_mass) * self.b.inv_mass;
 
-        self.a.pos -= self.normal * da * 0.8;
-        self.b.pos += self.normal * db * 0.8;
+        self.a.pos -= self.normal * da;
+        self.b.pos += self.normal * db;
     }
 
     pub fn resolve_collision(&mut self) {

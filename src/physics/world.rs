@@ -52,9 +52,7 @@ impl World {
             body.update(dt)
         }
 
-        for _ in 0..100 {
-            self.check_collisions(debug);
-        }
+        self.check_collisions(debug);
     }
 
     pub fn check_collisions(&mut self, debug: bool) {
