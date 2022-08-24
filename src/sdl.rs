@@ -1,4 +1,4 @@
-use crate::application::{HEIGHT, WIDTH};
+use crate::constants::{HEIGHT, WIDTH};
 use sdl2::{pixels::Color, render::Canvas, video::Window, Sdl};
 
 pub fn init_sdl() -> (Sdl, Canvas<Window>) {

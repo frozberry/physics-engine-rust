@@ -4,9 +4,9 @@ mod constants;
 mod force;
 mod graphics;
 mod physics;
+mod sdl;
 
 use application::Application;
-
 
 fn main() {
     let mut app = Application::new();
@@ -16,6 +16,4 @@ fn main() {
         app.update();
         app.render();
     }
-
-    app.destroy();
 }

@@ -68,20 +68,20 @@ impl Body {
     }
 
     pub fn add_texture(&mut self, path: &str) {
-        unsafe {
-            let file = CString::new(path).unwrap();
-            let f = file.as_ptr();
-            let surface = IMG_Load(f);
+        // unsafe {
+        //     let file = CString::new(path).unwrap();
+        //     let f = file.as_ptr();
+        //     let surface = IMG_Load(f);
 
-            SDL_GetError();
-            if !surface.is_null() {
-                self.texture = SDL_CreateTextureFromSurface(graphics::RENDERER, surface);
-                // puts(SDL_GetError());
-                SDL_FreeSurface(surface);
-            } else {
-                panic!("Error setting texture")
-            }
-        }
+        //     SDL_GetError();
+        //     if !surface.is_null() {
+        //         // self.texture = SDL_CreateTextureFromSurface(graphics::RENDERER, surface);
+        //         // puts(SDL_GetError());
+        //         SDL_FreeSurface(surface);
+        //     } else {
+        //         panic!("Error setting texture")
+        //     }
+        // }
     }
 
     pub fn update(&mut self, dt: f32) {

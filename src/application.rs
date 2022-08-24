@@ -1,17 +1,29 @@
-use std::mem::MaybeUninit;
+use std::time::Duration;
 
-use sdl2::sys::{
-    SDL_Delay, SDL_Event, SDL_GetMouseState, SDL_GetTicks, SDL_PollEvent, SDL_BUTTON_LEFT,
-    SDL_BUTTON_RIGHT,
+use sdl2::{
+    event::Event,
+    keyboard::Keycode,
+    mouse::MouseButton,
+    pixels::Color,
+    render::Canvas,
+    sys::{
+        SDL_Delay, SDL_Event, SDL_GetMouseState, SDL_GetTicks, SDL_PollEvent, SDL_BUTTON_LEFT,
+        SDL_BUTTON_RIGHT,
+    },
+    video::Window,
+    Sdl,
 };
 
 use crate::{
     constants::*,
     graphics::{self},
     physics::{body::Body, shape::Shape, vec2::Vec2, world::World},
+    sdl::init_sdl,
 };
 
 pub struct Application {
+    sdl: Sdl,
+    canvas: Canvas<Window>,
     running: bool,
     time_previous_frame: u32,
     debug: bool,
@@ -22,7 +34,7 @@ pub struct Application {
 
 impl Application {
     pub fn new() -> Self {
-        let running = graphics::open_window();
+        let (sdl, canvas) = init_sdl();
 
         let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 0.);
         a.restitution = 0.2;
@@ -37,9 +49,11 @@ impl Application {
         world.add_body(b);
 
         let application = Application {
-            running,
+            sdl,
+            canvas,
+            running: true,
             time_previous_frame: 0,
-            debug: false,
+            debug: true,
             gravity: true,
             poly: false,
             world,
@@ -48,130 +62,105 @@ impl Application {
         application
     }
 
-    pub fn is_running(&self) -> bool {
-        self.running
-    }
-
     /* ---------------------------------- Input --------------------------------- */
-
-    // This is not the best way to handle inputs in Rust
-    // I am trying to replicate the original C++ code
     pub fn input(&mut self) {
-        unsafe {
-            // Original C++ code uses uninitalized variable
-            // See graphics.rs line 29 for explanation
-            let mut uninit_event: MaybeUninit<SDL_Event> = MaybeUninit::uninit();
-
-            // SDL_PollEvent returns 1 or 0
-            // Original C++ just used implicit boolean conversion
-            while SDL_PollEvent(uninit_event.as_mut_ptr()) != 0 {
-                let event = uninit_event.assume_init();
-
-                // Uses constants defined in constants.rs because of SDL2 awkwardness
-                match event.type_ {
-                    SDLK_QUIT => {
-                        self.running = false;
-                        break;
-                    }
-                    SDLK_KEYDOWN => {
-                        match event.key.keysym.sym {
-                            SDLK_ESCAPE => {
-                                self.running = false;
-                            }
-                            SDLK_D => self.debug = !self.debug,
-                            SDLK_G => self.gravity = !self.gravity,
-                            SDLK_P => self.poly = !self.poly,
-                            _ => {}
-                        }
-                        break;
-                    }
-                    SDL_MOUSEBUTTONDOWN => {
-                        // Code for spawning particles
-                        if event.button.button == SDL_BUTTON_LEFT as u8 {
-                            let mut x = 1;
-                            let mut y = 1;
-                            SDL_GetMouseState(&mut x, &mut y);
-                            let v = vec![
-                                Vec2::new(20., 60.),
-                                Vec2::new(-40., 20.),
-                                Vec2::new(-20., -60.),
-                                Vec2::new(20., -60.),
-                                Vec2::new(40., 20.),
-                            ];
-                            let mut p;
-                            if self.poly {
-                                p = Body::new(Shape::Polygon(v), x as f32, y as f32, 1.);
-                            } else {
-                                p = Body::new(Shape::Box(100., 100.), x as f32, y as f32, 1.);
-                                p.add_texture("./assets/crate.png");
-                            }
-                            p.restitution = 0.3;
-                            p.friction = 0.4;
-                            self.world.add_body(p)
-                        }
-                        if event.button.button == SDL_BUTTON_RIGHT as u8 {
-                            let mut x = 1;
-                            let mut y = 1;
-                            SDL_GetMouseState(&mut x, &mut y);
-                            let mut p = Body::new(Shape::Circle(40.), x as f32, y as f32, 1.);
-                            p.add_texture("./assets/basketball.png");
-                            p.restitution = 0.8;
-                            p.friction = 0.4;
-                            self.world.add_body(p)
-                        }
-                    }
-
-                    _ => {}
+        let mut event_pump = self.sdl.event_pump().unwrap();
+        for event in event_pump.poll_iter() {
+            match event {
+                Event::Quit { .. } => {
+                    self.running = false;
                 }
+                Event::KeyDown { keycode, .. } => match keycode.unwrap() {
+                    Keycode::Escape => {
+                        self.running = false;
+                    }
+                    Keycode::D => self.debug = !self.debug,
+                    Keycode::G => self.poly = !self.poly,
+                    Keycode::P => self.gravity = !self.gravity,
+                    _ => {}
+                },
+                Event::MouseButtonDown {
+                    x, y, mouse_btn, ..
+                } => match mouse_btn {
+                    MouseButton::Left => {
+                        let v = vec![
+                            Vec2::new(20., 60.),
+                            Vec2::new(-40., 20.),
+                            Vec2::new(-20., -60.),
+                            Vec2::new(20., -60.),
+                            Vec2::new(40., 20.),
+                        ];
+                        let mut p;
+                        if self.poly {
+                            p = Body::new(Shape::Polygon(v), x as f32, y as f32, 1.);
+                        } else {
+                            p = Body::new(Shape::Box(100., 100.), x as f32, y as f32, 1.);
+                            p.add_texture("./assets/crate.png");
+                        }
+                        p.restitution = 0.3;
+                        p.friction = 0.4;
+                        self.world.add_body(p)
+                    }
+                    MouseButton::Right => {
+                        let mut p = Body::new(Shape::Circle(40.), x as f32, y as f32, 1.);
+                        p.add_texture("./assets/basketball.png");
+                        p.restitution = 0.8;
+                        p.friction = 0.4;
+                        self.world.add_body(p)
+                    }
+                    _ => {}
+                },
+                _ => {}
             }
         }
     }
 
     /* --------------------------------- Update --------------------------------- */
-
     pub fn update(&mut self) {
-        graphics::clear_screen(0xFF056263);
-        // Unsafe calls to SDL only
-        unsafe {
-            let time_since_last_frame = SDL_GetTicks() - self.time_previous_frame;
-            let time_to_wait = MILLISECS_PER_FRAME - time_since_last_frame as i32;
-            if time_to_wait > 0 {
-                SDL_Delay(time_to_wait as u32)
-            }
-        }
+        graphics::clear_screen(Color::RGB(0, 64, 255), &mut self.canvas);
 
-        let sdl_ticks;
-        unsafe {
-            sdl_ticks = SDL_GetTicks();
-        }
+        // unsafe {
+        //     let time_since_last_frame = SDL_GetTicks() - self.time_previous_frame;
+        //     let time_to_wait = MILLISECS_PER_FRAME - time_since_last_frame as i32;
+        //     if time_to_wait > 0 {
+        //         SDL_Delay(time_to_wait as u32)
+        //     }
+        // }
 
-        let delta_time_ms = (sdl_ticks - self.time_previous_frame) as f32;
-        let delta_time = f32::min(delta_time_ms / 1000., 0.016);
-        self.world.update(delta_time, self.gravity, self.debug);
-        self.time_previous_frame = sdl_ticks;
+        // let sdl_ticks;
+        // unsafe {
+        //     sdl_ticks = SDL_GetTicks();
+        // }
+
+        // let delta_time_ms = (sdl_ticks - self.time_previous_frame) as f32;
+        // let delta_time = f32::min(delta_time_ms / 1000., 0.016);
+
+        let dt = 0.016;
+        self.world.update(dt, self.gravity, self.debug);
+        // self.time_previous_frame = sdl_ticks;
     }
 
     /* --------------------------------- Render --------------------------------- */
 
-    pub fn render(&self) {
+    pub fn render(&mut self) {
         // Draw bodies
         for body in self.world.get_bodies() {
             let color = if body.is_colliding && self.debug {
-                0xFF0000FF
+                Color::RED
             } else {
-                0xFFFFFFFF
+                Color::WHITE
             };
             match body.shape {
                 Shape::Circle(radius) => {
                     if !self.debug && !body.texture.is_null() {
-                        graphics::draw_texture(
-                            body.pos.x as i32,
-                            body.pos.y as i32,
-                            radius as i32 * 2,
-                            radius as i32 * 2,
-                            body.rotation,
-                            body.texture,
-                        )
+                        // graphics::draw_texture(
+                        //     body.pos.x as i32,
+                        //     body.pos.y as i32,
+                        //     radius as i32 * 2,
+                        //     radius as i32 * 2,
+                        //     body.rotation,
+                        //     body.texture,
+                        // )
                     } else {
                         graphics::draw_circle(
                             body.pos.x as i16,
@@ -179,51 +168,56 @@ impl Application {
                             radius as i16,
                             body.rotation,
                             color,
+                            &mut self.canvas,
                         );
                     }
                 }
-                Shape::Box(w, h) => {
+                Shape::Box(width, height) => {
                     if !self.debug && !body.texture.is_null() {
-                        graphics::draw_texture(
-                            body.pos.x as i32,
-                            body.pos.y as i32,
-                            w as i32,
-                            h as i32,
-                            body.rotation,
-                            body.texture,
-                        );
+                        // graphics::draw_texture(
+                        //     body.pos.x as i32,
+                        //     body.pos.y as i32,
+                        //     w as i32,
+                        //     h as i32,
+                        //     body.rotation,
+                        //     body.texture,
+                        // );
                     } else {
                         graphics::draw_polygon(
                             body.pos.x as i16,
                             body.pos.y as i16,
                             body.shape.get_world_verticies(body.rotation, body.pos),
                             color,
+                            &mut self.canvas,
                         );
                     }
                 }
                 Shape::Polygon(_) => {
                     if !self.debug {
-                        graphics::draw_fill_polygon(
-                            body.pos.x as i16,
-                            body.pos.y as i16,
-                            body.shape.get_world_verticies(body.rotation, body.pos),
-                            color,
-                        );
+                        // graphics::draw_fill_polygon(
+                        //     body.pos.x as i16,
+                        //     body.pos.y as i16,
+                        //     body.shape.get_world_verticies(body.rotation, body.pos),
+                        //     color,
+                        // );
                     } else {
                         graphics::draw_polygon(
                             body.pos.x as i16,
                             body.pos.y as i16,
                             body.shape.get_world_verticies(body.rotation, body.pos),
                             color,
+                            &mut self.canvas,
                         );
                     }
                 }
             }
         }
-        graphics::render_frame();
+
+        self.canvas.present();
+        ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
 
-    pub fn destroy(&self) {
-        graphics::close_window();
+    pub fn is_running(&self) -> bool {
+        self.running
     }
 }
