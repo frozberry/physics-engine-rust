@@ -22,7 +22,7 @@ pub fn is_colliding(a: &mut Body, b: &mut Body) -> Option<Contact>
 ```
 
 ```rust
-let maybe_contact =	collision::is_colliding(&mut a, &mut b);
+let maybe_contact = collision::is_colliding(&mut a, &mut b);
 if let Some(contact) = maybe_contact {
 	resolve_contact(contact)
 }
@@ -123,12 +123,11 @@ For resolving collisions, I originally I wanted to:
 
 ```rust
 for i in 0..self.bodies.len() {
-	for j in (i + 1)..self.bodies.len() {
-		if i != j {
-			let maybe_contact =
-				collision::is_colliding(&mut self.bodies[i], &mut self.bodies[j]);
-		}
-	}
+    for j in (i + 1)..self.bodies.len() {
+        if i != j {
+            let maybe_contact = collision::is_colliding(&mut self.bodies[i], &mut self.bodies[j]);
+        }
+    }
 }
 ```
 
@@ -155,11 +154,11 @@ Now the compiler knows we aren't accessing the same element twice.
 
 ```rust
 for i in 0..self.bodies.len() {
-	for j in (i + 1)..self.bodies.len() {
-		if i != j {
-			let (left, right) = self.bodies.split_at_mut(i + 1);
-			let maybe_contact =
-				collision::is_colliding(&mut left[i], &mut right[j - i - 1]);
+    for j in (i + 1)..self.bodies.len() {
+        if i != j {
+            let (left, right) = self.bodies.split_at_mut(i + 1);
+            let maybe_contact =
+                collision::is_colliding(&mut left[i], &mut right[j - i - 1]);
 		}
 	}
 }
