@@ -34,12 +34,17 @@ impl World {
         self.torques.push(torque);
     }
 
-    pub fn update(&mut self, dt: f32, gravity: bool) {
+    pub fn update(&mut self, dt: f32, gravity: bool, wind: bool) {
         for body in &mut self.bodies {
             if gravity {
                 let weight = Vec2::new(0.0, body.mass * self.g * PIXELS_PER_METER);
                 body.add_force(weight);
             }
+            if wind {
+                let wind = Vec2::new(300., 0.);
+                body.add_force(wind)
+            }
+
             for force in self.forces.clone() {
                 body.add_force(force)
             }

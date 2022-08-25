@@ -29,7 +29,8 @@ pub struct Application {
     time_previous_frame: SystemTime,
     debug: bool,
     gravity: bool,
-    poly: bool,
+    wind: bool,
+    polygon: bool,
     world: World,
     crate_texture: Texture,
     basketball_texture: Texture,
@@ -70,8 +71,9 @@ impl Application {
             running: true,
             time_previous_frame: SystemTime::now(),
             debug: false,
+            wind: false,
             gravity: true,
-            poly: false,
+            polygon: false,
             world,
             crate_texture,
             basketball_texture,
@@ -94,7 +96,8 @@ impl Application {
                     }
                     Keycode::D => self.debug = !self.debug,
                     Keycode::G => self.gravity = !self.gravity,
-                    Keycode::P => self.poly = !self.poly,
+                    Keycode::W => self.wind = !self.wind,
+                    Keycode::P => self.polygon = !self.polygon,
                     _ => {}
                 },
                 Event::MouseButtonDown {
@@ -109,7 +112,7 @@ impl Application {
                             Vec2::new(40., 20.),
                         ];
                         let mut p;
-                        if self.poly {
+                        if self.polygon {
                             p = Body::new(Shape::Polygon(v), x as f32, y as f32, 1., None);
                         } else {
                             p = Body::new(
@@ -161,7 +164,7 @@ impl Application {
 
         let dt = f32::min(delta_time_ms as f32 / 1000., 0.016);
 
-        self.world.update(dt, self.gravity);
+        self.world.update(dt, self.gravity, self.wind);
         self.time_previous_frame = now;
     }
 
