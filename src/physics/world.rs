@@ -27,13 +27,6 @@ impl World {
         self.bodies.clone()
     }
 
-    pub fn add_force(&mut self, force: Vec2) {
-        self.forces.push(force);
-    }
-    pub fn add_torque(&mut self, torque: f32) {
-        self.torques.push(torque);
-    }
-
     pub fn update(&mut self, dt: f32, gravity: bool, wind: bool) {
         for body in &mut self.bodies {
             if gravity {
