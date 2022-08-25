@@ -131,14 +131,10 @@ for i in 0..self.bodies.len() {
 }
 ```
 
-```
-`is_colliding()` needs mutable references to the bodies, since they will be used to instantiate a `Contact` struct, which needs to mutate the bodies position.
+`is_colliding()` needs mutable references to the bodies, since they will be used to instantiate a `Contact` struct, which needs to mutate the bodies position. But the borrow checker does not like this.
 
-But the borrow checker does not like this.
 ```
-
 error[E0499]: cannot borrow `self.bodies` as mutable more than once at a time
-
 ````
 
 I think the problem is that the compiler does now know that `i != j`, so it thinks we could be accessing the same element twice. This would break the borrow checker rule of only a single mutable reference being allowed.
