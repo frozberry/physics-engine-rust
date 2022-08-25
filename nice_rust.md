@@ -162,4 +162,4 @@ for i in 0..self.bodies.len() {
 
 This is not a very readable solution, and the indexing arithmatic is not obvious at first glance. I think another solution would be to use interior mutability like a `Cell` or `RefCell`, which I haven't looked into much.
 
-As an aside: I was originally confused at the naming of `split_at_mut()`. What was the "mut" that was being "split_at"? Then I realised that it was just the mutable version of `split_at()`. I.e "split slice at n" and "split mutable slice at n".
+As an aside: I was originally confused at the naming of `split_at_mut()`. What was the "mut" that was being "split_at"? Then I realised that it was just the mutable version of `split_at()`. I.e "split slice at n" and "split slice at n mutably".
