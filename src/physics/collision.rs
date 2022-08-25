@@ -118,7 +118,6 @@ pub fn is_collidng_circle_polygon<'a>(
     circle: &'a mut Body,
     polygon: &'a mut Body,
 ) -> Option<Contact<'a>> {
-    // TODO writeup this design choice that enum needs to panic
     let radius;
     match circle.shape {
         Shape::Circle(r) => match polygon.shape {
