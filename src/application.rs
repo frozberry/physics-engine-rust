@@ -34,22 +34,35 @@ pub struct Application {
     crate_texture: Texture,
     basketball_texture: Texture,
     bowlingball_texture: Texture,
+    metal_texture: Texture,
 }
 
 impl Application {
     pub fn new() -> Self {
-        let (sdl, canvas, basketball_texture, crate_texture, bowlingball_texture) = init_sdl();
-
-        let mut a = Body::new(Shape::Box(300., 300.), 600., 800., 0., MyTexture::Crate);
-        a.restitution = 0.2;
-        a.rotation = 0.7;
-        let mut b = Body::new(Shape::Box(4000., 100.), 800., 1300., 0., None);
-        b.restitution = 0.6;
+        let (sdl, canvas, basketball_texture, crate_texture, bowlingball_texture, metal_texture) =
+            init_sdl();
 
         let mut world = World::new(9.81);
 
-        world.add_body(a);
-        world.add_body(b);
+        let mut body = Body::new(Shape::Box(200., 200.), 400., 500., 0., MyTexture::Crate);
+        body.restitution = 0.2;
+        body.rotation = 0.7;
+
+        let mut floor = Body::new(Shape::Box(4000., 50.), 1000., 1000., 0., None);
+        floor.restitution = 0.6;
+        floor.texture = Some(MyTexture::Metal);
+
+        let mut l_wall = Body::new(Shape::Box(50., 900.), 100., 550., 0., None);
+        l_wall.restitution = 0.6;
+        l_wall.texture = Some(MyTexture::Metal);
+        let mut r_wall = Body::new(Shape::Box(50., 900.), 1800., 550., 0., None);
+        r_wall.restitution = 0.6;
+        r_wall.texture = Some(MyTexture::Metal);
+
+        world.add_body(body);
+        world.add_body(floor);
+        world.add_body(r_wall);
+        world.add_body(l_wall);
 
         Application {
             sdl,
@@ -63,6 +76,7 @@ impl Application {
             crate_texture,
             basketball_texture,
             bowlingball_texture,
+            metal_texture,
         }
     }
 
@@ -175,6 +189,7 @@ impl Application {
                     } else {
                         let texture = match body.texture.unwrap() {
                             MyTexture::Crate => &self.crate_texture,
+                            MyTexture::Metal => &self.metal_texture,
                             MyTexture::BowlingBall => &self.bowlingball_texture,
                             MyTexture::BasketBall => &self.basketball_texture,
                         };
@@ -201,6 +216,7 @@ impl Application {
                     } else {
                         let texture = match body.texture.unwrap() {
                             MyTexture::Crate => &self.crate_texture,
+                            MyTexture::Metal => &self.metal_texture,
                             MyTexture::BowlingBall => &self.bowlingball_texture,
                             MyTexture::BasketBall => &self.basketball_texture,
                         };

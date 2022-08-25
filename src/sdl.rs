@@ -7,7 +7,7 @@ use sdl2::{
     Sdl,
 };
 
-pub fn init_sdl() -> (Sdl, Canvas<Window>, Texture, Texture, Texture) {
+pub fn init_sdl() -> (Sdl, Canvas<Window>, Texture, Texture, Texture, Texture) {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
@@ -33,6 +33,9 @@ pub fn init_sdl() -> (Sdl, Canvas<Window>, Texture, Texture, Texture) {
     let bowlingball_texture = texture_creator
         .load_texture("./assets/bowlingball.png")
         .expect("Could not load texture");
+    let metal_texture = texture_creator
+        .load_texture("./assets/metal.png")
+        .expect("Could not load texture");
 
     (
         sdl_context,
@@ -40,5 +43,6 @@ pub fn init_sdl() -> (Sdl, Canvas<Window>, Texture, Texture, Texture) {
         basketball_texture,
         crate_texture,
         bowlingball_texture,
+        metal_texture,
     )
 }
