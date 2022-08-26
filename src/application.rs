@@ -50,7 +50,7 @@ impl Application {
         body.rotation = 0.7;
 
         let mut floor = Body::new(Shape::Box(4000., 50.), 1000., 750., 0., None);
-        floor.restitution = 0.6;
+        floor.restitution = 0.8;
         floor.texture = Some(MyTexture::Metal);
 
         let mut l_wall = Body::new(Shape::Box(50., 600.), 100., 450., 0., None);
