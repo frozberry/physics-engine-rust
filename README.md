@@ -1,7 +1,7 @@
 # Rust Physics Engine
 A 2D physics engine built with Rust and SDL2.
 
-https://user-images.githubusercontent.com/93860959/186948187-8c6722c0-1ce2-42ae-bba7-0180752525ba.mp4
+https://user-images.githubusercontent.com/93860959/186948944-f0e7049d-0101-4fa7-98a8-a1e32825360e.mp4
 
 ### Features
   - Linear and angular motion simulation
