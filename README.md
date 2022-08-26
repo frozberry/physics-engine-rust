@@ -2,7 +2,7 @@
 A 2D physics engine built with Rust and SDL2.
 
 
-![](./screenshot.png)
+![](./demo.mp4)
 
 
 ### Features

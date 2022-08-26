@@ -12,7 +12,7 @@ pub fn init_sdl() -> (Sdl, Canvas<Window>, Texture, Texture, Texture, Texture) {
     let video_subsystem = sdl_context.video().unwrap();
 
     let window = video_subsystem
-        .window("Graphics", WIDTH, HEIGHT)
+        .window("Physics Engine", WIDTH, HEIGHT)
         .position_centered()
         .build()
         .unwrap();
