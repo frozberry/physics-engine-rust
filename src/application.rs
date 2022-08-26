@@ -45,18 +45,18 @@ impl Application {
 
         let mut world = World::new(9.81);
 
-        let mut body = Body::new(Shape::Box(200., 200.), 400., 500., 0., MyTexture::Crate);
+        let mut body = Body::new(Shape::Box(75., 75.), 350., 350., 0., MyTexture::Crate);
         body.restitution = 0.2;
         body.rotation = 0.7;
 
-        let mut floor = Body::new(Shape::Box(4000., 50.), 1000., 1000., 0., None);
+        let mut floor = Body::new(Shape::Box(4000., 50.), 1000., 750., 0., None);
         floor.restitution = 0.6;
         floor.texture = Some(MyTexture::Metal);
 
-        let mut l_wall = Body::new(Shape::Box(50., 900.), 100., 550., 0., None);
+        let mut l_wall = Body::new(Shape::Box(50., 600.), 100., 450., 0., None);
         l_wall.restitution = 0.6;
         l_wall.texture = Some(MyTexture::Metal);
-        let mut r_wall = Body::new(Shape::Box(50., 900.), 1800., 550., 0., None);
+        let mut r_wall = Body::new(Shape::Box(50., 600.), 1100., 450., 0., None);
         r_wall.restitution = 0.6;
         r_wall.texture = Some(MyTexture::Metal);
 
@@ -120,21 +120,12 @@ impl Application {
                             Vec2::new(20., -60.),
                             Vec2::new(40., 20.),
                         ];
-                        let mut p;
                         if self.polygon {
-                            p = Body::new(Shape::Polygon(v), x as f32, y as f32, 1., None);
+                            let p = Body::new(Shape::Polygon(v), x as f32, y as f32, 1., None);
+                            self.world.add_body(p)
                         } else {
-                            p = Body::new(
-                                Shape::Box(100., 100.),
-                                x as f32,
-                                y as f32,
-                                1.,
-                                MyTexture::Crate,
-                            );
+                            self.world.add_body(Body::crate_(x as f32, y as f32));
                         }
-                        p.restitution = 0.3;
-                        p.friction = 0.4;
-                        self.world.add_body(p)
                     }
                     _ => {}
                 },
@@ -145,7 +136,7 @@ impl Application {
 
     /* --------------------------------- Update --------------------------------- */
     pub fn update(&mut self) {
-        graphics::clear_screen(Color::RGB(0, 64, 255), &mut self.canvas);
+        graphics::clear_screen(Color::RGB(40, 40, 200), &mut self.canvas);
 
         let time_since_last_frame = SystemTime::now()
             .duration_since(self.time_previous_frame)

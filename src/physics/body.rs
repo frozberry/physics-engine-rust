@@ -66,7 +66,7 @@ impl Body {
 
     pub fn basketball(x: f32, y: f32) -> Self {
         let mut b = Body::new(
-            Shape::Circle(40.),
+            Shape::Circle(30.),
             x as f32,
             y as f32,
             1.,
@@ -79,11 +79,24 @@ impl Body {
 
     pub fn bowlingball(x: f32, y: f32) -> Self {
         let mut b = Body::new(
-            Shape::Circle(30.),
+            Shape::Circle(20.),
             x as f32,
             y as f32,
             10.,
             MyTexture::BowlingBall,
+        );
+        b.restitution = 0.2;
+        b.friction = 0.2;
+        b
+    }
+
+    pub fn crate_(x: f32, y: f32) -> Self {
+        let mut b = Body::new(
+            Shape::Box(75., 75.),
+            x as f32,
+            y as f32,
+            1.,
+            MyTexture::Crate,
         );
         b.restitution = 0.2;
         b.friction = 0.2;
