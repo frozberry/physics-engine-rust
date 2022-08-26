@@ -104,6 +104,15 @@ impl Application {
                     x, y, mouse_btn, ..
                 } => match mouse_btn {
                     MouseButton::Left => {
+                        let mut rng = rand::thread_rng();
+                        let r: f64 = rng.gen();
+                        if r > 0.5 {
+                            self.world.add_body(Body::basketball(x as f32, y as f32));
+                        } else {
+                            self.world.add_body(Body::bowlingball(x as f32, y as f32));
+                        }
+                    }
+                    MouseButton::Right => {
                         let v = vec![
                             Vec2::new(20., 60.),
                             Vec2::new(-40., 20.),
@@ -126,15 +135,6 @@ impl Application {
                         p.restitution = 0.3;
                         p.friction = 0.4;
                         self.world.add_body(p)
-                    }
-                    MouseButton::Right => {
-                        let mut rng = rand::thread_rng();
-                        let r: f64 = rng.gen();
-                        if r > 0.5 {
-                            self.world.add_body(Body::basketball(x as f32, y as f32));
-                        } else {
-                            self.world.add_body(Body::bowlingball(x as f32, y as f32));
-                        }
                     }
                     _ => {}
                 },
