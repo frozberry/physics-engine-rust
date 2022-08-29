@@ -4,7 +4,7 @@ use super::constants::PIXELS_PER_METER;
 
 pub struct World {
     g: f32,
-    bodies: Vec<Body>,
+    pub bodies: Vec<Body>,
     forces: Vec<Vec2>,
     torques: Vec<f32>,
 }
