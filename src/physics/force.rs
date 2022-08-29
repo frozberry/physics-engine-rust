@@ -1,4 +1,4 @@
-use crate::physics::{body::Body, vec2::Vec2};
+use crate::{body::Body, vec2::Vec2};
 
 // F = k * |v|^2 * -(unit_vector)
 pub fn generate_drag_force(body: &Body, k: f32) -> Vec2 {
