@@ -1,7 +1,6 @@
-use crate::{
-    constants::PIXELS_PER_METER,
-    physics::{body::Body, collision, vec2::Vec2},
-};
+use crate::physics::{body::Body, collision, vec2::Vec2};
+
+use super::constants::PIXELS_PER_METER;
 
 pub struct World {
     g: f32,

@@ -15,10 +15,11 @@ use sdl2::{
 };
 
 use crate::{
-    constants::MILLISECS_PER_FRAME,
     graphics::{self},
-    my_texture::MyTexture,
-    physics::{body::Body, shape::Shape, vec2::Vec2, world::World},
+    physics::{
+        body::Body, constants::MILLISECS_PER_FRAME, my_texture::MyTexture, shape::Shape,
+        vec2::Vec2, world::World,
+    },
     sdl::init_sdl,
 };
 

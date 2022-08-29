@@ -1,9 +1,6 @@
 extern crate sdl2;
 mod application;
-mod constants;
-mod force;
 mod graphics;
-mod my_texture;
 mod physics;
 mod sdl;
 

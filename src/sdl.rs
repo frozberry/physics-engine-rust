@@ -1,4 +1,3 @@
-use crate::constants::{HEIGHT, WIDTH};
 use sdl2::{
     image::LoadTexture,
     pixels::Color,
@@ -6,6 +5,8 @@ use sdl2::{
     video::Window,
     Sdl,
 };
+
+use crate::physics::constants::{HEIGHT, WIDTH};
 
 pub fn init_sdl() -> (Sdl, Canvas<Window>, Texture, Texture, Texture, Texture) {
     let sdl_context = sdl2::init().unwrap();

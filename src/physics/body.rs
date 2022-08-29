@@ -1,6 +1,4 @@
-use crate::my_texture::MyTexture;
-
-use super::{shape::Shape, vec2::Vec2};
+use super::{my_texture::MyTexture, shape::Shape, vec2::Vec2};
 
 #[derive(Clone)]
 pub struct Body {
