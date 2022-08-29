@@ -1,4 +1,4 @@
-use crate::physics::{body::Body, collision, vec2::Vec2};
+use crate::{body::Body, collision, vec2::Vec2};
 
 use super::constants::PIXELS_PER_METER;
 

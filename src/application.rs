@@ -3,6 +3,10 @@ use std::{
     time::{Duration, SystemTime},
 };
 
+use physics_engine::{
+    body::Body, constants::MILLISECS_PER_FRAME, my_texture::MyTexture, shape::Shape, vec2::Vec2,
+    world::World,
+};
 use rand::Rng;
 use sdl2::{
     event::Event,
@@ -16,10 +20,6 @@ use sdl2::{
 
 use crate::{
     graphics::{self},
-    physics::{
-        body::Body, constants::MILLISECS_PER_FRAME, my_texture::MyTexture, shape::Shape,
-        vec2::Vec2, world::World,
-    },
     sdl::init_sdl,
 };
 

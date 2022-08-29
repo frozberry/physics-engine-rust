@@ -1,7 +1,6 @@
 extern crate sdl2;
 mod application;
 mod graphics;
-mod physics;
 mod sdl;
 
 use application::Application;

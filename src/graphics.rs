@@ -1,4 +1,4 @@
-use crate::physics::vec2::Vec2;
+use physics_engine::vec2::Vec2;
 use sdl2::{
     gfx::primitives::DrawRenderer,
     pixels::Color,
